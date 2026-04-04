@@ -5,7 +5,7 @@
 # ─────────────────────────────────
 
 GIT_NAME="JandroCastro"
-GIT_EMAIL="jandroportonovo@hotmail.cp,"
+GIT_EMAIL="jandroportonovo@hotmail.com"
 REPO_URL="https://github.com/JandroCastro/FA-2026.git"
 
 # ─────────────────────────────────
