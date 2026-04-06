@@ -1,0 +1,246 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  --clr-primary: #6366f1;
+  --clr-primary-light: #a5b4fc;
+  --clr-primary-bg: rgba(99, 102, 241, 0.1);
+  --clr-primary-border: rgba(99, 102, 241, 0.3);
+  --clr-success: #10b981;
+  --clr-danger: #ef4444;
+  --clr-warning: #f59e0b;
+
+  --clr-bg: #0f172a;
+  --clr-bg-2: #1e293b;
+  --clr-bg-3: #334155;
+  --clr-bg-code: #020617;
+
+  --clr-text: #f1f5f9;
+  --clr-text-muted: #94a3b8;
+  --clr-text-disabled: #475569;
+  --clr-border: #334155;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+ul,
+ol {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  border: none;
+  font: inherit;
+  background: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--clr-bg);
+  color: var(--clr-text);
+  line-height: 1.6;
+}
+
+/* ── Wrapper ─────────────────────────────────────────── */
+.lab-wrapper {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+.lab-header {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.lab-header__nav {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.back-link {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+  transition: color 0.15s;
+}
+.back-link:hover {
+  color: var(--clr-primary);
+}
+
+.lab-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--clr-primary-light);
+  margin-bottom: 0.5rem;
+}
+
+.lab-header h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* ── Demo section ────────────────────────────────────── */
+.demo-section {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: var(--clr-bg-2);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+}
+
+.demo-section h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.625rem;
+}
+
+.demo-section p {
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+  margin-bottom: 1rem;
+  max-width: 65ch;
+}
+
+/* ── Botones ─────────────────────────────────────────── */
+.demo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  background: var(--clr-primary);
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s;
+  margin-right: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.demo-btn:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.demo-btn--danger {
+  background: var(--clr-danger);
+}
+.demo-btn--danger:hover {
+  background: #dc2626;
+}
+
+.demo-btn--secondary {
+  background: var(--clr-bg-3);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+}
+.demo-btn--secondary:hover {
+  border-color: var(--clr-primary);
+}
+
+/* ── Output console ──────────────────────────────────── */
+.output-console {
+  background: var(--clr-bg-code);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--clr-primary-light);
+  min-height: 80px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.7;
+  margin-top: 0.75rem;
+}
+
+/* ── Exercise instructions ───────────────────────────── */
+.exercise-instructions {
+  background: var(--clr-primary-bg);
+  border: 1px solid var(--clr-primary-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.exercise-instructions h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--clr-primary-light);
+  margin-bottom: 0.75rem;
+}
+
+.exercise-instructions ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+}
+
+.exercise-instructions code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: var(--clr-bg-3);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  color: var(--clr-primary-light);
+}
+
+/* ── Btn general ─────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.btn--secondary {
+  background: var(--clr-bg-3);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+}
+.btn--secondary:hover {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary-light);
+}
+
+/* ── Code inline ─────────────────────────────────────── */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: var(--clr-bg-3);
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  color: var(--clr-primary-light);
+}

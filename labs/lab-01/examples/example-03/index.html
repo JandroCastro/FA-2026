@@ -1,0 +1,168 @@
+HTML
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 03 · Closures · Lab 01</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .counter-display {
+        font-size: 4rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--clr-primary-light);
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--clr-bg-3);
+        border-radius: var(--radius-lg);
+        margin-bottom: 0.75rem;
+        min-width: 140px;
+        display: inline-block;
+      }
+      .counter-note {
+        font-size: 0.8125rem;
+        color: var(--clr-text-muted);
+        font-family: var(--font-mono);
+        margin-bottom: 1rem;
+      }
+      .counters-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 560px) {
+        .counters-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .counter-card {
+        background: var(--clr-bg-3);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        text-align: center;
+      }
+      .counter-card__title {
+        font-size: 0.8125rem;
+        font-family: var(--font-mono);
+        color: var(--clr-text-muted);
+        margin-bottom: 0.75rem;
+      }
+      .counter-card__value {
+        font-size: 3rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--clr-primary-light);
+        margin-bottom: 0.75rem;
+      }
+      .counter-card--b .counter-card__value {
+        color: #34d399;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-01"
+            class="back-link"
+            target="_parent"
+            >← Lab 01</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 01 · Example 03</span>
+        <h1>Closures</h1>
+      </header>
+
+      <main>
+        <!-- Sección 1: Un contador ───────────────────────── -->
+        <section class="demo-section">
+          <h2>1 · Estado privado con closure</h2>
+          <p>
+            <code>count</code> vive dentro de <code>createCounter()</code>. No
+            es accesible desde fuera. Solo los métodos devueltos pueden
+            modificarla.
+          </p>
+
+          <div style="text-align: center">
+            <span class="counter-display" id="counter-display">0</span>
+            <p class="counter-note" id="counter-note">counter.value() → 0</p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap">
+            <button class="demo-btn" id="btn-inc">+ increment()</button>
+            <button class="demo-btn demo-btn--danger" id="btn-dec">
+              − decrement()
+            </button>
+            <button class="demo-btn demo-btn--secondary" id="btn-reset">
+              ↺ reset()
+            </button>
+          </div>
+
+          <p
+            style="
+              margin-top: 1rem;
+              font-size: 0.8125rem;
+              color: var(--clr-text-muted);
+              font-family: var(--font-mono);
+            "
+          >
+            Prueba en consola: <code>counter.count</code> → undefined
+          </p>
+        </section>
+
+        <!-- Sección 2: Dos instancias independientes ─────── -->
+        <section class="demo-section">
+          <h2>2 · Dos instancias — dos entornos independientes</h2>
+          <p>
+            Cada llamada a <code>createCounter()</code> crea un closure nuevo.
+            Incrementar uno no afecta al otro.
+          </p>
+
+          <div class="counters-grid">
+            <div class="counter-card">
+              <div class="counter-card__title">counterA = createCounter(0)</div>
+              <div class="counter-card__value" id="val-a">0</div>
+              <div>
+                <button class="demo-btn" onclick="stepA(1)">+</button>
+                <button class="demo-btn demo-btn--danger" onclick="stepA(-1)">
+                  −
+                </button>
+              </div>
+            </div>
+            <div class="counter-card counter-card--b">
+              <div class="counter-card__title">
+                counterB = createCounter(100)
+              </div>
+              <div class="counter-card__value" id="val-b">100</div>
+              <div>
+                <button class="demo-btn" onclick="stepB(1)">+</button>
+                <button class="demo-btn demo-btn--danger" onclick="stepB(-1)">
+                  −
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <p
+            style="
+              margin-top: 1rem;
+              font-size: 0.8125rem;
+              color: var(--clr-text-muted);
+              font-family: var(--font-mono);
+            "
+          >
+            counterA y counterB no comparten <code>count</code>. Cada closure
+            tiene el suyo.
+          </p>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

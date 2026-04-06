@@ -1,0 +1,58 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 05 · Módulos · Lab 01</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .transaction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.625rem 1rem;
+        background: var(--clr-bg-3);
+        border-radius: var(--radius);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+      .transaction-item span:first-child {
+        color: var(--clr-text);
+      }
+      .transaction-item span:last-child {
+        font-family: var(--font-mono);
+        color: var(--clr-text-muted);
+        font-size: 0.8125rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-01"
+            target="_parent"
+            class="back-link"
+            >← Lab 01</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 01 · Example 05</span>
+        <h1>Módulos ESM</h1>
+      </header>
+      <main>
+        <section class="demo-section">
+          <h2>Importar utilidades desde módulos separados</h2>
+          <p>
+            <code>format.js</code> exporta las funciones de formateo.
+            <code>script.js</code> las importa y las usa para renderizar al DOM.
+          </p>
+          <div id="list"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

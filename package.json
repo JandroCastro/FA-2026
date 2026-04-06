@@ -1,0 +1,12 @@
+{
+  "name": "frontend-avanzado-bootcamp",
+  "version": "1.0.0",
+  "description": "Plataforma de labs · Módulo Frontend Avanzado · Bootcamp 2026",
+  "private": true,
+  "scripts": {
+    "dev": "live-server --port=3000 --open=/"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

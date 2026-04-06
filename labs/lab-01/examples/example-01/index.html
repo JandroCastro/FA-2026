@@ -1,0 +1,69 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 01 · Event Loop · Lab 01</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-item {
+        padding: 0.375rem 0.75rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 0.375rem;
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+      }
+      .output-item--sync {
+        background: rgba(96, 165, 250, 0.15);
+        color: #60a5fa;
+      }
+      .output-item--macro {
+        background: rgba(249, 115, 22, 0.15);
+        color: #f97316;
+      }
+      .output-item--micro {
+        background: rgba(52, 211, 153, 0.15);
+        color: #34d399;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-01"
+            class="back-link"
+            target="_parent"
+            >← Lab 01</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 01 · Example 01</span>
+        <h1>Single-thread y Event Loop</h1>
+      </header>
+      <main>
+        <section class="demo-section">
+          <h2>1 · El código síncrono siempre va primero</h2>
+          <p>
+            El callback del <code>setTimeout</code> llega después aunque el
+            delay sea 0ms.
+          </p>
+          <button class="demo-btn" onclick="runDemo()">▶ Ejecutar</button>
+          <ul id="output" style="margin-top: 1rem; list-style: none"></ul>
+        </section>
+
+        <section class="demo-section">
+          <h2>2 · Microtasks vs Macrotasks</h2>
+          <p>
+            Las Promesas tienen mayor prioridad que <code>setTimeout</code>.
+            ¿Predices el orden?
+          </p>
+          <button class="demo-btn" onclick="runQueues()">▶ Ejecutar</button>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

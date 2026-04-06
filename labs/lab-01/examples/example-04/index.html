@@ -1,0 +1,97 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 04 · This · Lab 01</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        background: var(--clr-bg-3);
+        border-radius: var(--radius);
+        font-family: var(--font-mono);
+        margin-bottom: 1rem;
+      }
+      .badge__label {
+        font-size: 0.8125rem;
+        color: var(--clr-text-muted);
+      }
+      .badge__count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--clr-primary-light);
+        min-width: 2rem;
+        text-align: center;
+      }
+      .result-note {
+        font-size: 0.8125rem;
+        font-family: var(--font-mono);
+        margin-top: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-sm);
+      }
+      .result-note--bad {
+        background: rgba(239, 68, 68, 0.1);
+        color: #f87171;
+      }
+      .result-note--good {
+        background: rgba(16, 185, 129, 0.1);
+        color: #34d399;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-01"
+            target="_parent"
+            class="back-link"
+            >← Lab 01</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 01 · Example 04</span>
+        <h1>This</h1>
+      </header>
+      <main>
+        <section class="demo-section">
+          <h2>El bug — <code>this</code> perdido en un callback</h2>
+          <p>
+            Al pasar un método como referencia, pierde el vínculo con su objeto.
+          </p>
+
+          <div class="badge">
+            <span class="badge__label">Contador:</span>
+            <span class="badge__count" id="badge-count">0</span>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap">
+            <button class="demo-btn demo-btn--danger" id="btn-bug">
+              ❌ Con bug (función regular)
+            </button>
+            <button class="demo-btn" id="btn-fix">
+              ✅ Corregido (arrow function)
+            </button>
+          </div>
+
+          <p class="result-note result-note--bad">
+            btn-bug → <code>badge.increment</code> como referencia suelta →
+            <code>this</code> es undefined
+          </p>
+          <p class="result-note result-note--good">
+            btn-fix → <code>() =&gt; badge.increment()</code> →
+            <code>this</code> es la instancia
+          </p>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

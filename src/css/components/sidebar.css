@@ -1,0 +1,102 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--clr-bg-2);
+  border-right: 1px solid var(--clr-border);
+}
+
+.sidebar__header {
+  padding: var(--sp-5) var(--sp-5) var(--sp-3);
+  border-bottom: 1px solid var(--clr-border);
+  flex-shrink: 0;
+}
+
+.sidebar__heading {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--clr-text-muted);
+}
+
+.sidebar__nav {
+  flex: 1;
+  padding: var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  overflow-y: auto;
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  color: var(--clr-text-muted);
+  transition: all var(--ease-fast);
+  cursor: pointer;
+  width: 100%;
+}
+.sidebar__link:not(.sidebar__link--disabled):hover {
+  background: var(--clr-bg-3);
+  color: var(--clr-text);
+}
+
+.sidebar__link--active {
+  background: var(--clr-primary-bg) !important;
+  color: var(--clr-primary-light) !important;
+  border: 1px solid var(--clr-primary-border);
+}
+
+.sidebar__link--home {
+  color: var(--clr-text);
+  font-weight: 500;
+  margin-bottom: var(--sp-2);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--clr-border);
+  border-radius: 0;
+}
+
+.sidebar__link--disabled {
+  cursor: default;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.sidebar__lab-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  min-width: 22px;
+  color: var(--clr-text-disabled);
+  transition: color var(--ease-fast);
+}
+.sidebar__link--active .sidebar__lab-num {
+  color: var(--clr-primary);
+}
+
+.sidebar__lab-title {
+  flex: 1;
+  line-height: 1.3;
+}
+
+.sidebar__badge {
+  font-size: 0.625rem;
+  padding: 1px var(--sp-2);
+  background: var(--clr-bg-3);
+  border-radius: 999px;
+  color: var(--clr-text-disabled);
+}
+
+.sidebar__footer {
+  padding: var(--sp-4) var(--sp-5);
+  border-top: 1px solid var(--clr-border);
+  font-size: var(--text-xs);
+  color: var(--clr-text-disabled);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
