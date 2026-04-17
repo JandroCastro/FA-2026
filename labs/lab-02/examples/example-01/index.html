@@ -1,0 +1,175 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 01 · Cadena de prototipos · Lab 02</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .chain-diagram {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
+      }
+      .chain-node {
+        padding: 0.875rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+      .chain-node--instance {
+        background: rgba(99, 102, 241, 0.12);
+        border-color: rgba(99, 102, 241, 0.4);
+        color: var(--clr-primary-light);
+      }
+      .chain-node--proto {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.35);
+        color: #34d399;
+      }
+      .chain-node--object {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.35);
+        color: #fbbf24;
+      }
+      .chain-node--null {
+        background: var(--clr-bg-3);
+        color: var(--clr-text-muted);
+      }
+      .chain-node__label {
+        font-size: 0.6875rem;
+        font-family: var(--font-sans);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        opacity: 0.65;
+        margin-bottom: 0.35rem;
+      }
+      .chain-arrow {
+        text-align: center;
+        color: var(--clr-text-disabled);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        padding: 0.3rem 0;
+      }
+      .prop-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.875rem;
+      }
+      .prop-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.625rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        border: 1px solid transparent;
+      }
+      .prop-badge--own {
+        background: rgba(99, 102, 241, 0.15);
+        border-color: rgba(99, 102, 241, 0.25);
+        color: var(--clr-primary-light);
+      }
+      .prop-badge--inherited {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+      }
+      .legend {
+        display: flex;
+        gap: 1.25rem;
+        margin-top: 0.75rem;
+        font-size: 0.8125rem;
+        color: var(--clr-text-muted);
+      }
+      .legend-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 0.3rem;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-02"
+            class="back-link"
+            target="_parent"
+            >← Lab 02</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 02 · Example 01</span>
+        <h1>La cadena de prototipos</h1>
+      </header>
+
+      <main>
+        <section class="demo-section">
+          <h2>1 · Propiedades propias vs heredadas</h2>
+          <p>
+            Cada objeto tiene propiedades <strong>propias</strong> (únicas de
+            esa instancia) y propiedades que <strong>hereda</strong> de su
+            prototipo. <code>hasOwnProperty</code> distingue unas de otras.
+          </p>
+          <button class="demo-btn" onclick="demoOwnProps()">
+            ▶ Crear producto
+          </button>
+          <div id="output-own"></div>
+          <div class="legend" id="legend-own" style="display: none">
+            <span>
+              <span
+                class="legend-dot"
+                style="background: var(--clr-primary)"
+              ></span
+              >Propiedad propia
+            </span>
+            <span>
+              <span
+                class="legend-dot"
+                style="background: var(--clr-success)"
+              ></span
+              >Heredada del prototipo
+            </span>
+          </div>
+        </section>
+
+        <section class="demo-section">
+          <h2>2 · La cadena de búsqueda</h2>
+          <p>
+            Cuando accedes a una propiedad, JavaScript la busca primero en el
+            objeto, luego en su prototipo, luego en el prototipo del prototipo…
+            hasta <code>null</code>. Si no la encuentra: <code>undefined</code>.
+          </p>
+          <button class="demo-btn" onclick="demoChain()">
+            ▶ Visualizar cadena
+          </button>
+          <div id="output-chain"></div>
+        </section>
+
+        <section class="demo-section">
+          <h2>3 · Los métodos se comparten, no se copian</h2>
+          <p>
+            Crea 1000 productos y seguirá habiendo
+            <strong>una sola copia</strong> de cada método. Todas las instancias
+            apuntan al mismo objeto prototipo.
+          </p>
+          <button class="demo-btn" onclick="demoShared()">▶ Verificar</button>
+          <pre
+            id="output-shared"
+            class="output-console"
+            style="display: none"
+          ></pre>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

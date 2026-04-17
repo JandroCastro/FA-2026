@@ -1,0 +1,186 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 03 · Herencia con extends y super · Lab 02</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      #notification-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        min-height: 3rem;
+      }
+      .notif {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-3);
+        font-size: 0.875rem;
+        animation: slideIn 0.2s ease;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      .notif--success {
+        border-color: rgba(16, 185, 129, 0.35);
+        background: rgba(16, 185, 129, 0.07);
+      }
+      .notif--error {
+        border-color: rgba(239, 68, 68, 0.35);
+        background: rgba(239, 68, 68, 0.07);
+      }
+      .notif--warning {
+        border-color: rgba(245, 158, 11, 0.35);
+        background: rgba(245, 158, 11, 0.07);
+      }
+      .notif__time {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--clr-text-muted);
+        flex-shrink: 0;
+      }
+      .notif__message {
+        flex: 1;
+      }
+      .notif--success .notif__message {
+        color: #6ee7b7;
+      }
+      .notif--error .notif__message {
+        color: #fca5a5;
+      }
+      .notif--warning .notif__message {
+        color: #fcd34d;
+      }
+      .notif__action {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: var(--radius-sm);
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.15s;
+      }
+      .notif__action:hover {
+        background: rgba(16, 185, 129, 0.35);
+      }
+      .notif--acted .notif__action {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .notif__code {
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+        flex-shrink: 0;
+      }
+      .notif__close {
+        font-size: 1.1rem;
+        line-height: 1;
+        padding: 0 2px;
+        color: var(--clr-text-muted);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: color 0.15s;
+      }
+      .notif__close:hover {
+        color: var(--clr-text);
+      }
+      .empty-state {
+        color: var(--clr-text-disabled);
+        font-size: 0.875rem;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-02"
+            class="back-link"
+            target="_parent"
+            >← Lab 02</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 02 · Example 03</span>
+        <h1>
+          Herencia con
+          <code style="font-size: 1.5rem">extends</code> y
+          <code style="font-size: 1.5rem">super</code>
+        </h1>
+      </header>
+
+      <main>
+        <section class="demo-section">
+          <h2>1 · Subclases que extienden el comportamiento base</h2>
+          <p>
+            Las tres subclases heredan de <code>Notification</code>. Cada una
+            sobreescribe <code>render()</code> y llama a
+            <code>super.render()</code> para reutilizar el comportamiento base
+            en lugar de duplicarlo.
+          </p>
+          <div>
+            <button class="demo-btn" onclick="demoSuccess()">✅ Success</button>
+            <button class="demo-btn demo-btn--danger" onclick="demoError()">
+              ❌ Error
+            </button>
+            <button
+              class="demo-btn"
+              style="background: var(--clr-warning)"
+              onclick="demoWarning()"
+            >
+              ⚠️ Warning
+            </button>
+            <button class="demo-btn demo-btn--secondary" onclick="clearPanel()">
+              Limpiar
+            </button>
+          </div>
+          <div id="notification-panel">
+            <p class="empty-state">
+              Pulsa los botones para añadir notificaciones.
+            </p>
+          </div>
+        </section>
+
+        <section class="demo-section">
+          <h2>2 · Todas son instancias de la clase base</h2>
+          <p>
+            <code>instanceof</code> recorre la cadena de prototipos. Una
+            subclase siempre es instancia de su clase padre — útil para
+            gestionar colecciones mixtas.
+          </p>
+          <button class="demo-btn" onclick="demoInstanceof()">
+            ▶ Verificar instanceof
+          </button>
+          <pre
+            id="output-instanceof"
+            class="output-console"
+            style="display: none"
+          ></pre>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

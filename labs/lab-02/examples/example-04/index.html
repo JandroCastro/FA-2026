@@ -1,0 +1,187 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 04 · Memory leaks y limpieza · Lab 02</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .leak-demo {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      @media (max-width: 580px) {
+        .leak-demo {
+          grid-template-columns: 1fr;
+        }
+      }
+      .leak-col {
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 1rem;
+      }
+      .leak-col--bad {
+        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.04);
+      }
+      .leak-col--good {
+        border-color: rgba(16, 185, 129, 0.3);
+        background: rgba(16, 185, 129, 0.04);
+      }
+      .leak-col__label {
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.75rem;
+      }
+      .leak-col--bad .leak-col__label {
+        color: #fca5a5;
+      }
+      .leak-col--good .leak-col__label {
+        color: #6ee7b7;
+      }
+      .leak-status {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: var(--clr-text-muted);
+        margin: 0.5rem 0;
+        min-height: 1.4em;
+      }
+      .fire-count {
+        font-family: var(--font-mono);
+        font-size: 2.25rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin: 0.375rem 0 0.125rem;
+      }
+      .leak-col--bad .fire-count {
+        color: #fca5a5;
+      }
+      .leak-col--good .fire-count {
+        color: #6ee7b7;
+      }
+      .fire-label {
+        font-size: 0.75rem;
+        color: var(--clr-text-muted);
+        margin-bottom: 0.75rem;
+      }
+      .price-display {
+        font-family: var(--font-mono);
+        font-size: 1.625rem;
+        font-weight: 700;
+        margin: 0.625rem 0 0.25rem;
+      }
+      .leak-col--bad .price-display {
+        color: #fca5a5;
+      }
+      .leak-col--good .price-display {
+        color: #6ee7b7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-02"
+            class="back-link"
+            target="_parent"
+            >← Lab 02</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 02 · Example 04</span>
+        <h1>Memory leaks y limpieza</h1>
+      </header>
+
+      <main>
+        <section class="demo-section">
+          <h2>1 · Event listeners que se acumulan</h2>
+          <p>
+            Simula montar y desmontar un componente varias veces. Sin limpiar,
+            cada montaje apila un listener adicional: el botón de prueba dispara
+            <em>todos</em> los handlers acumulados con cada clic.
+          </p>
+          <div class="leak-demo">
+            <div class="leak-col leak-col--bad">
+              <div class="leak-col__label">❌ Sin limpiar</div>
+              <button class="demo-btn demo-btn--danger" onclick="mountLeaky()">
+                Montar componente
+              </button>
+              <div class="leak-status" id="leaky-status">Sin montar</div>
+              <div class="fire-count" id="leaky-fires">0</div>
+              <div class="fire-label">invocaciones del handler</div>
+              <button class="demo-btn demo-btn--secondary" id="btn-test-leaky">
+                Clic de prueba
+              </button>
+            </div>
+            <div class="leak-col leak-col--good">
+              <div class="leak-col__label">✅ Con limpieza</div>
+              <button
+                class="demo-btn"
+                style="background: var(--clr-success)"
+                onclick="mountClean()"
+              >
+                Montar componente
+              </button>
+              <div class="leak-status" id="clean-status">Sin montar</div>
+              <div class="fire-count" id="clean-fires">0</div>
+              <div class="fire-label">invocaciones del handler</div>
+              <button class="demo-btn demo-btn--secondary" id="btn-test-clean">
+                Clic de prueba
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="demo-section">
+          <h2>2 · Intervals que se acumulan</h2>
+          <p>
+            Reiniciar un ticker sin cancelar el anterior provoca que múltiples
+            intervals corran en paralelo. El precio se actualiza cada vez más
+            rápido conforme se apilan. Con limpieza, siempre corre exactamente
+            uno.
+          </p>
+          <div class="leak-demo">
+            <div class="leak-col leak-col--bad">
+              <div class="leak-col__label">❌ Sin limpiar</div>
+              <button
+                class="demo-btn demo-btn--danger"
+                onclick="startIntervalLeaky()"
+              >
+                (Re)iniciar ticker
+              </button>
+              <div class="leak-status" id="interval-leaky-status">Detenido</div>
+              <div class="price-display" id="price-leaky">—</div>
+              <div class="fire-label">precio simulado (€)</div>
+            </div>
+            <div class="leak-col leak-col--good">
+              <div class="leak-col__label">✅ Con limpieza</div>
+              <button
+                class="demo-btn"
+                style="background: var(--clr-success)"
+                onclick="startIntervalClean()"
+              >
+                (Re)iniciar ticker
+              </button>
+              <button
+                class="demo-btn demo-btn--secondary"
+                onclick="stopIntervalClean()"
+              >
+                Detener
+              </button>
+              <div class="price-display" id="price-clean">—</div>
+              <div class="fire-label">precio simulado (€)</div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
