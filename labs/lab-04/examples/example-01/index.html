@@ -1,0 +1,278 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 01 · customElements.define() · Lab 04</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      /* output-console con saltos de línea visibles */
+      .output-console {
+        white-space: pre-wrap;
+      }
+
+      /* ── Grid de comparación ─────────────────────────── */
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .comp-col {
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        overflow: hidden;
+      }
+      .comp-col__header {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--clr-bg-3);
+        border-bottom: 1px solid var(--clr-border);
+      }
+      .comp-col__header--warn {
+        color: #fcd34d;
+        border-bottom-color: rgba(245, 158, 11, 0.3);
+      }
+      .comp-col__header--ok {
+        color: #6ee7b7;
+        border-bottom-color: rgba(16, 185, 129, 0.3);
+      }
+      .comp-col__body {
+        padding: 1.25rem;
+        background: var(--clr-bg-2);
+        min-height: 130px;
+      }
+
+      /* ── Display base de los custom elements ─────────── */
+      hello-world,
+      mystery-element {
+        display: block;
+      }
+
+      /* Estado no definido: caja punteada con el texto de relleno */
+      mystery-element:not(:defined) {
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        border: 2px dashed var(--clr-border);
+        color: var(--clr-text-disabled);
+        font-size: 0.875rem;
+        text-align: center;
+        font-family: var(--font-mono);
+        line-height: 1.6;
+      }
+
+      /* ── Tester de nombres ───────────────────────────── */
+      .name-tester {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+      .name-tester input {
+        flex: 1;
+        min-width: 220px;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-2);
+        color: var(--clr-text);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+      }
+      .name-tester input:focus {
+        outline: none;
+        border-color: var(--clr-primary);
+      }
+
+      /* ── Grid de métodos del registry ────────────────── */
+      .api-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+        margin-top: 1rem;
+      }
+      .api-card {
+        padding: 0.875rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-2);
+        cursor: pointer;
+        text-align: left;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        color: var(--clr-text);
+        font-family: inherit;
+        font-size: inherit;
+      }
+      .api-card:hover {
+        border-color: var(--clr-primary-border);
+        background: var(--clr-primary-bg);
+      }
+      .api-card__method {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: var(--clr-primary-light);
+        font-weight: 600;
+        margin-bottom: 0.375rem;
+      }
+      .api-card__desc {
+        font-size: 0.75rem;
+        color: var(--clr-text-muted);
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-04"
+            class="back-link"
+            target="_parent"
+            >← Lab 04</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 04 · Example 01</span>
+        <h1>
+          <code style="font-size: 1.5rem">customElements.define()</code>: el
+          primer componente
+        </h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: comparación undefined vs definido ── -->
+        <section class="demo-section">
+          <h2>1 · Tag sin definir vs elemento registrado</h2>
+          <p>
+            El navegador acepta cualquier nombre de etiqueta desconocida: la
+            parsea, la inserta en el DOM como <code>HTMLElement</code> genérico
+            y sigue adelante. No lanza errores. Pero tampoco hace nada especial
+            con ella. Eso cambia cuando registras una clase con
+            <code>customElements.define()</code>. El CSS también lo sabe: la
+            pseudoclase <code>:defined</code> distingue ambos estados.
+          </p>
+          <div class="comparison-grid">
+            <div class="comp-col">
+              <div class="comp-col__header comp-col__header--warn">
+                ❓ &lt;mystery-element&gt; — sin definir
+              </div>
+              <div class="comp-col__body">
+                <mystery-element id="mystery-el">
+                  Soy una etiqueta desconocida. El navegador me inserta en el
+                  DOM pero no sabe qué hacer conmigo.
+                </mystery-element>
+              </div>
+            </div>
+            <div class="comp-col">
+              <div class="comp-col__header comp-col__header--ok">
+                ✅ &lt;hello-world&gt; — registrado
+              </div>
+              <div class="comp-col__body">
+                <hello-world id="hello-el"></hello-world>
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              margin-top: 1rem;
+              display: flex;
+              gap: 0.5rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="definirMystery()">
+              ⚡ Definir mystery-element
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="compararConstructores()"
+            >
+              🔍 Comparar constructores
+            </button>
+          </div>
+          <div class="output-console" id="out-s1">
+            Pulsa un botón para ver el resultado…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: la regla del guión ─────────────── -->
+        <section class="demo-section">
+          <h2>2 · La regla del guión</h2>
+          <p>
+            Todo nombre de custom element debe contener al menos un guión
+            (<code>-</code>). Esta norma evita colisiones con los elementos HTML
+            nativos, presentes y futuros. El navegador lanza un
+            <code>DOMException</code> si no se cumple. Prueba con
+            <code>boton</code>, <code>mi-boton</code> y el mismo nombre dos
+            veces.
+          </p>
+          <div class="name-tester">
+            <input
+              type="text"
+              id="name-input"
+              placeholder="mi-boton, boton, my-card…"
+              value="mi-componente"
+              onkeydown="if (event.key === 'Enter') probarNombre();"
+            />
+            <button class="demo-btn" onclick="probarNombre()">Registrar</button>
+          </div>
+          <div class="output-console" id="out-s2">
+            Escribe un nombre y pulsa Registrar (o Enter)…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 3: CustomElementRegistry API ──────── -->
+        <section class="demo-section">
+          <h2>3 · El objeto <code>window.customElements</code></h2>
+          <p>
+            <code>window.customElements</code> es la instancia global de
+            <code>CustomElementRegistry</code>. Expone métodos para
+            <em>consultar</em> el registro, no solo para escribir en él. Pulsa
+            cada tarjeta para ejecutarlo.
+          </p>
+          <div class="api-grid">
+            <button class="api-card" onclick="llamarGet('hello-world')">
+              <div class="api-card__method">.get('hello-world')</div>
+              <div class="api-card__desc">
+                Devuelve la clase constructora del elemento registrado
+              </div>
+            </button>
+            <button class="api-card" onclick="llamarGet('no-existe')">
+              <div class="api-card__method">.get('no-existe')</div>
+              <div class="api-card__desc">
+                Nombre no registrado → devuelve
+                <code>undefined</code>
+              </div>
+            </button>
+            <button class="api-card" onclick="llamarGetName()">
+              <div class="api-card__method">.getName(HelloWorld)</div>
+              <div class="api-card__desc">
+                Inverso de <code>.get()</code>: dada la clase, devuelve el
+                nombre de tag
+              </div>
+            </button>
+            <button class="api-card" onclick="llamarWhenDefined()">
+              <div class="api-card__method">.whenDefined('hello-world')</div>
+              <div class="api-card__desc">
+                Devuelve una <code>Promise</code> que se resuelve cuando el
+                elemento está registrado
+              </div>
+            </button>
+          </div>
+          <div class="output-console" id="out-s3">
+            Pulsa una tarjeta para ejecutar el método…
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

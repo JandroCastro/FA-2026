@@ -1,0 +1,247 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 04 · Mobile first · Lab 03</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      /* ── Slider de viewport ─────────────────────────── */
+      .viewport-controls {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+      .viewport-controls label {
+        font-size: 0.875rem;
+        color: var(--clr-text-muted);
+        white-space: nowrap;
+      }
+      #width-slider {
+        flex: 1;
+        min-width: 160px;
+        accent-color: var(--clr-primary);
+      }
+      .bp-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+      .bp-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        font-weight: 600;
+        background: var(--clr-primary-bg);
+        color: var(--clr-primary-light);
+        border: 1px solid var(--clr-primary-border);
+        min-width: 3rem;
+        text-align: center;
+        transition: all 0.15s;
+      }
+      .width-label {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: var(--clr-text-muted);
+      }
+
+      /* ── Demo viewport ──────────────────────────────── */
+      .demo-viewport-wrap {
+        border: 1px dashed var(--clr-border);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        background: var(--clr-bg);
+        overflow: hidden;
+      }
+      .demo-viewport {
+        margin: 0 auto;
+        transition: max-width 0.1s ease;
+      }
+      .product-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      /* Clases aplicadas por JS para simular breakpoints */
+      .bp-sm .product-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .bp-lg .product-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .bp-xl .product-grid {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+
+      .product-card {
+        background: var(--clr-bg-2);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .product-card__img {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: var(--clr-bg-3);
+      }
+      .product-card__body {
+        padding: 0.625rem 0.75rem;
+      }
+      .product-card__name {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .product-card__price {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--clr-primary-light);
+      }
+
+      /* ── Breakpoint pills ───────────────────────────── */
+      .bp-scale {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .bp-pill {
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        background: var(--clr-bg-3);
+        color: var(--clr-text-muted);
+        border: 1px solid transparent;
+        transition: all 0.15s;
+      }
+      .bp-pill.active {
+        background: var(--clr-primary-bg);
+        color: var(--clr-primary-light);
+        border-color: var(--clr-primary-border);
+      }
+
+      /* ── Comparación de código ──────────────────────── */
+      .code-compare {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .code-col {
+        background: var(--clr-bg-code);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 1rem;
+        overflow: hidden;
+      }
+      .code-col h4 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+      }
+      .code-col pre {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        line-height: 1.8;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .rule-active {
+        background: rgba(99, 102, 241, 0.2);
+        border-radius: 2px;
+      }
+      .rule-dim {
+        opacity: 0.45;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-03"
+            class="back-link"
+            target="_parent"
+            >← Lab 03</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 03 · Example 04</span>
+        <h1>
+          Mobile first y <code style="font-size: 1.5rem">breakpoints</code>
+        </h1>
+      </header>
+
+      <main>
+        <section class="demo-section">
+          <h2>1 · Los estilos base son los de móvil</h2>
+          <p>
+            Arrastra el slider para simular diferentes anchos de viewport. El
+            grid cambia de columnas al cruzar cada breakpoint. Mobile first: los
+            estilos base cubren el móvil y las media queries
+            <em>añaden</em> complejidad progresivamente — nunca la quitan.
+          </p>
+          <div class="viewport-controls">
+            <label for="width-slider">Ancho simulado:</label>
+            <input
+              type="range"
+              id="width-slider"
+              min="300"
+              max="860"
+              value="340"
+              step="4"
+            />
+            <div class="bp-indicator">
+              <span class="width-label" id="width-label">340px</span>
+              <span class="bp-badge" id="bp-badge">xs</span>
+            </div>
+          </div>
+          <div class="bp-scale" id="bp-scale"></div>
+          <div class="demo-viewport-wrap">
+            <div class="demo-viewport" id="demo-viewport">
+              <div class="product-grid" id="product-grid"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="demo-section">
+          <h2>
+            2 · Mobile first vs Desktop first: mismos breakpoints, dirección
+            opuesta
+          </h2>
+          <p>
+            Ambas estrategias producen el mismo resultado visual. La diferencia
+            está en la dirección de escritura: mobile first <em>añade</em> con
+            <code>min-width</code>; desktop first <em>quita</em> con
+            <code>max-width</code>. El breakpoint activo en el slider de arriba
+            se resalta en cada columna.
+          </p>
+          <div class="code-compare">
+            <div class="code-col">
+              <h4>📱 Mobile first — <code>min-width</code></h4>
+              <pre id="code-mobile-first"></pre>
+            </div>
+            <div class="code-col">
+              <h4>🖥 Desktop first — <code>max-width</code></h4>
+              <pre id="code-desktop-first"></pre>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

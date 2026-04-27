@@ -1,0 +1,297 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 04 · Shadow DOM · Lab 04</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-console {
+        white-space: pre-wrap;
+      }
+
+      /* ── Grids ───────────────────────────────────────── */
+      .three-col-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .two-col-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      /* ── Demo boxes ──────────────────────────────────── */
+      .demo-box {
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        overflow: hidden;
+      }
+      .demo-box__header {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        background: var(--clr-bg-3);
+        border-bottom: 1px solid var(--clr-border);
+      }
+      .demo-box__header--light {
+        color: #fcd34d;
+        border-bottom-color: rgba(245, 158, 11, 0.3);
+      }
+      .demo-box__header--shadow {
+        color: #a5b4fc;
+        border-bottom-color: rgba(99, 102, 241, 0.3);
+      }
+      .demo-box__header--green {
+        color: #6ee7b7;
+        border-bottom-color: rgba(16, 185, 129, 0.3);
+      }
+      .demo-box__header--open {
+        color: #a5b4fc;
+        border-bottom-color: rgba(99, 102, 241, 0.3);
+      }
+      .demo-box__header--closed {
+        color: #94a3b8;
+        border-bottom-color: rgba(148, 163, 184, 0.3);
+      }
+      .demo-box__body {
+        padding: 1.25rem;
+        background: var(--clr-bg-2);
+        min-height: 110px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .demo-box__tag {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--clr-text-disabled);
+        margin: 0;
+      }
+
+      /* ── Botón del Light DOM ─────────────────────────── */
+      .base-btn {
+        align-self: flex-start;
+        padding: 0.625rem 1.25rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-3);
+        color: var(--clr-text);
+        font-size: 0.875rem;
+        font-family: inherit;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          color 0.2s;
+      }
+
+      /* Override global: solo afecta al Light DOM dentro de #s1-demo ──────
+         Los botones dentro de shadow roots NO son alcanzables por este selector */
+      #s1-demo.override-active .base-btn {
+        background: crimson !important;
+        color: white !important;
+        border-color: darkred !important;
+      }
+
+      /* ── Custom elements en bloque ───────────────────── */
+      shadow-button {
+        display: block;
+        align-self: flex-start;
+      }
+
+      /* ── Barra de toggle ─────────────────────────────── */
+      .toggle-bar {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding: 0.875rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-2);
+        margin: 1rem 0;
+      }
+      .toggle-bar code {
+        font-size: 0.8125rem;
+        color: var(--clr-text-muted);
+      }
+
+      /* ── Fila de botones ─────────────────────────────── */
+      .btn-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-04"
+            class="back-link"
+            target="_parent"
+            >← Lab 04</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 04 · Example 04</span>
+        <h1>Shadow DOM: la barrera de estilos</h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: encapsulación de estilos ───────── -->
+        <section class="demo-section">
+          <h2>1 · Los estilos globales no entran — los internos no salen</h2>
+          <p>
+            Cuando un elemento tiene Shadow DOM, los selectores CSS del
+            documento principal no pueden alcanzar los elementos que hay dentro.
+            Y a la inversa: los estilos definidos dentro del Shadow DOM no
+            afectan al exterior. La frontera es bidireccional. Aplica el estilo
+            global y observa cuál de los tres botones se ve afectado.
+          </p>
+
+          <div class="toggle-bar">
+            <button
+              id="btn-toggle"
+              class="demo-btn"
+              onclick="toggleGlobalStyle()"
+            >
+              ⚡ Aplicar estilo global
+            </button>
+            <code
+              >.base-btn { background: crimson !important; color: white
+              !important; }</code
+            >
+          </div>
+
+          <div class="three-col-grid" id="s1-demo">
+            <div class="demo-box">
+              <div class="demo-box__header demo-box__header--light">
+                1 · Light DOM
+              </div>
+              <div class="demo-box__body">
+                <button class="base-btn" id="btn-light">
+                  Botón en Light DOM
+                </button>
+                <p class="demo-box__tag">← recibe el estilo global ✅</p>
+              </div>
+            </div>
+
+            <div class="demo-box">
+              <div class="demo-box__header demo-box__header--shadow">
+                2 · Shadow DOM · custom element
+              </div>
+              <div class="demo-box__body">
+                <shadow-button id="shadow-btn-el"></shadow-button>
+                <p class="demo-box__tag">
+                  ← encapsulado en &lt;shadow-button&gt; ✅
+                </p>
+              </div>
+            </div>
+
+            <div class="demo-box">
+              <div class="demo-box__header demo-box__header--green">
+                3 · Shadow DOM · &lt;div&gt; normal
+              </div>
+              <div class="demo-box__body">
+                <div id="shadow-host-div"></div>
+                <p class="demo-box__tag">
+                  ← Shadow DOM no requiere custom element ✅
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="inspectarAcceso()"
+            >
+              🔍 Inspeccionar acceso al DOM
+            </button>
+          </div>
+          <div class="output-console" id="out-s1">
+            Pulsa "Aplicar estilo global" para ver la diferencia…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: open vs closed ─────────────────── -->
+        <section class="demo-section">
+          <h2>2 · <code>mode: 'open'</code> vs <code>mode: 'closed'</code></h2>
+          <p>
+            Al crear un shadow root con
+            <code>attachShadow({ mode: 'open' })</code>, la propiedad
+            <code>element.shadowRoot</code> devuelve el shadow root desde
+            JavaScript externo. Con <code>mode: 'closed'</code> devuelve
+            <code>null</code>: el componente funciona, pero el exterior no puede
+            inspeccionarlo ni modificarlo.
+          </p>
+
+          <div class="two-col-grid">
+            <div class="demo-box">
+              <div class="demo-box__header demo-box__header--open">
+                mode: 'open'
+              </div>
+              <div class="demo-box__body">
+                <div id="host-open"></div>
+                <p class="demo-box__tag">
+                  host.shadowRoot → ShadowRoot accesible
+                </p>
+              </div>
+            </div>
+            <div class="demo-box">
+              <div class="demo-box__header demo-box__header--closed">
+                mode: 'closed'
+              </div>
+              <div class="demo-box__body">
+                <div id="host-closed"></div>
+                <p class="demo-box__tag">host.shadowRoot → null</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="verShadowRoot('host-open')"
+            >
+              host-open.shadowRoot
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="verShadowRoot('host-closed')"
+            >
+              host-closed.shadowRoot
+            </button>
+            <button class="demo-btn" onclick="inyectarColorOpen()">
+              Inyectar color (open)
+            </button>
+            <button
+              class="demo-btn demo-btn--danger"
+              onclick="inyectarColorClosed()"
+            >
+              Intentar inyectar (closed)
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="resetColorOpen()"
+            >
+              ↺ Reset open
+            </button>
+          </div>
+          <div class="output-console" id="out-s2">
+            Pulsa un botón para explorar el shadow root…
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

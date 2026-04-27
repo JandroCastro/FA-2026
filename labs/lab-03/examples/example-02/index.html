@@ -1,0 +1,313 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 02 · Nesting · Lab 03</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .editor-pane {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .pane-label {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--clr-text-muted);
+      }
+      .scss-input {
+        background: var(--clr-bg-code);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: #f9a8d4;
+        resize: vertical;
+        min-height: 260px;
+        line-height: 1.7;
+      }
+      .scss-input:focus {
+        outline: none;
+        border-color: var(--clr-primary);
+      }
+      .css-output {
+        background: var(--clr-bg-code);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: #86efac;
+        min-height: 260px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        line-height: 1.7;
+      }
+      /* Tabla de selectores */
+      .selector-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.375rem;
+        margin-top: 1rem;
+      }
+      .selector-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--clr-bg-code);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+      .selector-item.depth-ok {
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      .selector-item.depth-warn {
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+      .selector-item.depth-danger {
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+      .depth-badge {
+        flex-shrink: 0;
+        padding: 2px 8px;
+        border-radius: var(--radius-sm);
+        font-size: 0.6875rem;
+        font-weight: 600;
+      }
+      .depth-ok .depth-badge {
+        background: rgba(16, 185, 129, 0.15);
+        color: #6ee7b7;
+      }
+      .depth-warn .depth-badge {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fcd34d;
+      }
+      .depth-danger .depth-badge {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+      }
+      .selector-text {
+        flex: 1;
+        color: var(--clr-text);
+        word-break: break-all;
+      }
+      /* Sección 2: & reference */
+      .ampersand-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .code-col {
+        background: var(--clr-bg-code);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 1rem;
+      }
+      .code-col h4 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+      }
+      .code-col pre {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        line-height: 1.8;
+        white-space: pre-wrap;
+      }
+      .c-scss {
+        color: #f9a8d4;
+      }
+      .c-css {
+        color: #86efac;
+      }
+      .c-dim {
+        color: var(--clr-text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-03"
+            class="back-link"
+            target="_parent"
+            >← Lab 03</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 03 · Example 02</span>
+        <h1>
+          Nesting: <code style="font-size: 1.5rem">estructura visual</code> vs
+          CSS plano
+        </h1>
+      </header>
+
+      <main>
+        <section class="demo-section">
+          <h2>1 · Cada nivel de nesting añade un selector al resultado</h2>
+          <p>
+            Compila el SCSS. El CSS generado es plano: el compilador convierte
+            la jerarquía visual en selectores encadenados. A más niveles de
+            nesting, mayor especificidad — y más difícil de sobreescribir.
+          </p>
+          <div class="editor-grid">
+            <div class="editor-pane">
+              <span class="pane-label">SCSS — estructura visual anidada</span>
+              <textarea
+                class="scss-input"
+                id="scss-editor"
+                spellcheck="false"
+              ></textarea>
+            </div>
+            <div class="editor-pane">
+              <span class="pane-label"
+                >CSS compilado — selectores planos generados</span
+              >
+              <div class="css-output" id="css-output">
+                Pulsa "Compilar" para ver el resultado.
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              margin-top: 0.75rem;
+              display: flex;
+              gap: 0.5rem;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="compilarSCSS()">
+              ▶ Compilar y analizar
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="resetEditor()"
+            >
+              ↺ Restablecer
+            </button>
+            <span
+              id="compile-status"
+              style="
+                font-family: var(--font-mono);
+                font-size: 0.8125rem;
+                color: var(--clr-text-muted);
+              "
+            ></span>
+          </div>
+          <div
+            id="selector-analysis"
+            style="display: none; margin-top: 1.25rem"
+          >
+            <p
+              style="
+                font-size: 0.875rem;
+                color: var(--clr-text-muted);
+                margin-bottom: 0.5rem;
+              "
+            >
+              Selectores generados — profundidad (partes separadas por espacio):
+              <span style="font-family: var(--font-mono); color: #6ee7b7"
+                >≤2 ok</span
+              >
+              ·
+              <span style="font-family: var(--font-mono); color: #fcd34d"
+                >3 atención</span
+              >
+              ·
+              <span style="font-family: var(--font-mono); color: #fca5a5"
+                >≥4 revisar</span
+              >
+            </p>
+            <div class="selector-list" id="selector-list"></div>
+          </div>
+        </section>
+
+        <section class="demo-section">
+          <h2>
+            2 · El operador <code>&amp;</code>: referencia al selector padre
+          </h2>
+          <p>
+            Sin <code>&amp;</code>, un selector dentro de un bloque anidado
+            genera un selector descendente (<code>.btn .label</code>). Con
+            <code>&amp;</code>, se concatena directamente al padre
+            (<code>.btn:hover</code>, <code>.btn--danger</code>).
+          </p>
+          <div class="ampersand-grid">
+            <div class="code-col">
+              <h4>SCSS</h4>
+              <pre><span class="c-scss">.btn {
+  color: #fff;
+
+  /* Sin &amp;: genera .btn .label */
+  .label {
+    font-size: .875rem;
+  }
+
+  /* Con &amp;: genera .btn:hover */
+  &amp;:hover {
+    background: #4f46e5;
+  }
+
+  /* Con &amp;: genera .btn--danger */
+  &amp;--danger {
+    background: #ef4444;
+  }
+
+  /* Con &amp;: genera .is-active.btn */
+  .is-active &amp; {
+    outline: 2px solid #6366f1;
+  }
+}</span></pre>
+            </div>
+            <div class="code-col">
+              <h4>CSS compilado</h4>
+              <pre><span class="c-css">.btn {
+  color: #fff;
+}
+
+/* Selector descendente */
+.btn .label {
+  font-size: .875rem;
+}
+
+/* Concatenado al padre */
+.btn:hover {
+  background: #4f46e5;
+}
+
+/* Sufijo BEM */
+.btn--danger {
+  background: #ef4444;
+}
+
+/* El padre queda al final */
+.is-active .btn {
+  outline: 2px solid #6366f1;
+}</span></pre>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sass.js@0.11.1/dist/sass.sync.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

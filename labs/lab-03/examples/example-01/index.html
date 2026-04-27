@@ -1,0 +1,258 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 01 · Variables SCSS y design tokens · Lab 03</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      p:hover {
+      }
+      article p  {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: blue;
+      }
+      .card {
+        color: pink;
+      }
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .editor-pane {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .pane-label {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--clr-text-muted);
+      }
+      .scss-input {
+        background: var(--clr-bg-code);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: #f9a8d4;
+        resize: vertical;
+        min-height: 200px;
+        line-height: 1.7;
+      }
+      .scss-input:focus {
+        outline: none;
+        border-color: var(--clr-primary);
+      }
+      .css-output {
+        background: var(--clr-bg-code);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: #86efac;
+        min-height: 200px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        line-height: 1.7;
+      }
+      .preview-area {
+        margin-top: 1rem;
+        min-height: 3.5rem;
+      }
+      .demo-card {
+        padding: 1rem;
+        border-radius: var(--radius);
+        background: var(--clr-bg-3);
+        border: 1px solid var(--clr-border);
+        font-size: 0.875rem;
+        color: var(--clr-text-muted);
+      }
+      .swatch-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .swatch-card {
+        padding: 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-2);
+      }
+      .swatch-card h4 {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--clr-text-muted);
+        margin-bottom: 0.75rem;
+      }
+      .color-block {
+        height: 52px;
+        border-radius: var(--radius-sm);
+        transition: background 0.3s ease;
+      }
+      .color-block--scss {
+        background: #6366f1;
+      }
+      .color-block--css {
+        background: var(--demo-primary, #6366f1);
+      }
+      .swatch-label {
+        margin-top: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--clr-text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-03"
+            class="back-link"
+            target="_parent"
+            >← Lab 03</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 03 · Example 01</span>
+        <h1>
+          Variables SCSS y <code style="font-size: 1.5rem">design tokens</code>
+        </h1>
+      </header>
+
+      <main>
+        <section class="demo-section">
+          <h2>1 · El compilador borra las variables</h2>
+          <p>
+            Edita el SCSS y pulsa <strong>Compilar</strong>. Las variables
+            <code>$</code> desaparecen en el CSS resultante: el compilador
+            sustituye cada variable por su valor antes de que el navegador vea
+            el archivo.
+          </p>
+          <div class="editor-grid">
+            <div class="editor-pane">
+              <span class="pane-label">SCSS — tú escribes esto</span>
+              <textarea
+                class="scss-input"
+                id="scss-editor"
+                spellcheck="false"
+              ></textarea>
+            </div>
+            <div class="editor-pane">
+              <span class="pane-label"
+                >CSS compilado — el navegador recibe esto</span
+              >
+              <div class="css-output" id="css-output">
+                Pulsa "Compilar" para ver el resultado.
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              margin-top: 0.75rem;
+              display: flex;
+              gap: 0.5rem;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="compilarSCSS()">
+              ▶ Compilar
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="resetEditor()"
+            >
+              ↺ Restablecer
+            </button>
+            <span
+              id="compile-status"
+              style="
+                font-family: var(--font-mono);
+                font-size: 0.8125rem;
+                color: var(--clr-text-muted);
+              "
+            ></span>
+          </div>
+          <div class="preview-area" id="preview-area">
+            <div class="demo-card">
+              Previsualización: compila para ver los estilos aplicados.
+            </div>
+          </div>
+        </section>
+
+        <section class="demo-section">
+          <h2>
+            2 · CSS custom properties: variables que el navegador sí conoce
+          </h2>
+          <p>
+            Las custom properties (<code>--variable</code>) llegan intactas al
+            navegador y JavaScript puede modificarlas en runtime. Las variables
+            SCSS ya no existen en ese momento: el compilador las sustituyó horas
+            antes.
+          </p>
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              flex-wrap: wrap;
+              margin-bottom: 0.75rem;
+            "
+          >
+            <button class="demo-btn" onclick="toggleTheme()">
+              🌗 Cambiar tema (custom property)
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="intentarCambiarSCSS()"
+            >
+              ⚠️ "Cambiar" variable SCSS
+            </button>
+          </div>
+          <pre
+            class="output-console"
+            id="output-theme"
+            style="display: none"
+          ></pre>
+          <div class="swatch-row">
+            <div class="swatch-card">
+              <h4>Variable SCSS (hardcoded en CSS compilado)</h4>
+              <div class="color-block color-block--scss"></div>
+              <p class="swatch-label">
+                background: #6366f1 — fijo, no modificable desde JS
+              </p>
+            </div>
+            <div class="swatch-card">
+              <h4>CSS custom property (viva en el navegador)</h4>
+              <div class="color-block color-block--css"></div>
+              <p class="swatch-label" id="label-css">--demo-primary: #6366f1</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="demo-section">
+          <h2>3 · El patrón profesional: los dos sistemas juntos</h2>
+          <p>
+            SCSS variables para valores del build. CSS custom properties para
+            valores que el navegador necesita modificar en runtime: temas,
+            preferencias del usuario, estados dinámicos.
+          </p>
+          <pre class="output-console" id="output-pattern"></pre>
+        </section>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sass.js@0.11.1/dist/sass.sync.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,353 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 03 · template y slot · Lab 04</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-console {
+        white-space: pre-wrap;
+      }
+
+      /* ── Grid de comparación (reutilizado de ex-01) ──── */
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .comp-col {
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        overflow: hidden;
+      }
+      .comp-col__header {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--clr-bg-3);
+        border-bottom: 1px solid var(--clr-border);
+      }
+      .comp-col__header--muted {
+        color: var(--clr-text-muted);
+      }
+      .comp-col__header--ok {
+        color: #6ee7b7;
+        border-bottom-color: rgba(16, 185, 129, 0.3);
+      }
+      .comp-col__body {
+        padding: 1.25rem;
+        background: var(--clr-bg-2);
+        min-height: 130px;
+      }
+
+      /* ── Inspector visual de la template ─────────────── */
+      .tpl-inspector {
+        padding: 0.875rem 1rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-code);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 2;
+        color: var(--clr-text-muted);
+      }
+      .tpl-inspector__tag {
+        color: #93c5fd;
+      }
+      .tpl-inspector__attr {
+        color: #fcd34d;
+      }
+      .tpl-inspector__note {
+        color: var(--clr-text-disabled);
+        font-size: 0.75rem;
+      }
+      .tpl-inspector__frag {
+        color: #a5b4fc;
+      }
+
+      /* ── Área de clones ──────────────────────────────── */
+      #clones-area {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        min-height: 116px;
+      }
+      .clone-card {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        padding: 0.625rem 0.875rem;
+        border-radius: var(--radius-sm);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        background: rgba(99, 102, 241, 0.07);
+      }
+      .clone-card__num {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #a5b4fc;
+        background: rgba(99, 102, 241, 0.15);
+        padding: 0.125rem 0.5rem;
+        border-radius: var(--radius-sm);
+        flex-shrink: 0;
+      }
+      .clone-card__label {
+        font-size: 0.8125rem;
+        color: var(--clr-text);
+        margin: 0;
+      }
+      .clone-card__ts {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--clr-text-muted);
+        margin: 0;
+      }
+
+      /* ── Grid de info-cards (sección 2) ──────────────── */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      info-card {
+        display: block;
+      }
+
+      /* ── Fila de botones ─────────────────────────────── */
+      .btn-row {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Templates: en el DOM, no renderizadas ──────── -->
+    <template id="card-plantilla">
+      <div class="clone-card">
+        <span class="clone-card__num"></span>
+        <div>
+          <p class="clone-card__label">🧩 Clon desde &lt;template&gt;</p>
+          <p class="clone-card__ts">
+            Creado: <span class="clone-ts-value"></span>
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <template id="info-card-tpl">
+      <style>
+        :host {
+          display: block;
+        }
+        .card {
+          border-radius: 8px;
+          border: 1px solid var(--clr-border);
+          background: var(--clr-bg-2);
+          overflow: hidden;
+          height: 100%;
+        }
+        .card__title {
+          padding: 0.75rem 1rem;
+          background: var(--clr-bg-3);
+          border-bottom: 1px solid var(--clr-border);
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: var(--clr-primary-light);
+          margin: 0;
+        }
+        .card__body {
+          padding: 1rem;
+          font-size: 0.8125rem;
+          color: var(--clr-text-muted);
+          line-height: 1.6;
+          margin: 0;
+        }
+        .card__footer {
+          padding: 0.5rem 1rem;
+          border-top: 1px solid var(--clr-border);
+          font-size: 0.75rem;
+          color: var(--clr-text-disabled);
+          font-family: var(--font-mono);
+        }
+      </style>
+      <article class="card">
+        <h3 class="card__title">
+          <slot name="title">Título sin definir</slot>
+        </h3>
+        <p class="card__body">
+          <slot name="body"
+            >Contenido sin definir — añade un elemento con slot="body"</slot
+          >
+        </p>
+        <div class="card__footer">
+          <slot name="footer">info-card</slot>
+        </div>
+      </article>
+    </template>
+    <!-- ── Fin templates ──────────────────────────────── -->
+
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-04"
+            class="back-link"
+            target="_parent"
+            >← Lab 04</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 04 · Example 03</span>
+        <h1>
+          <code style="font-size: 1.5rem">&lt;template&gt;</code> y
+          <code style="font-size: 1.5rem">&lt;slot&gt;</code>
+        </h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: template ────────────────────── -->
+        <section class="demo-section">
+          <h2>
+            1 · <code>&lt;template&gt;</code>: HTML que existe pero no se ve
+          </h2>
+          <p>
+            Un elemento <code>&lt;template&gt;</code> es parseado por el
+            navegador y existe en el DOM, pero
+            <strong>no renderiza ningún contenido visible</strong>. Su propiedad
+            <code>.content</code> es un <code>DocumentFragment</code> que puede
+            clonarse tantas veces como se necesite. Cada clon es independiente:
+            modificar uno no afecta al original ni a los demás.
+          </p>
+
+          <div class="comparison-grid">
+            <div class="comp-col">
+              <div class="comp-col__header comp-col__header--muted">
+                📄 En el HTML — no renderiza
+              </div>
+              <div class="comp-col__body">
+                <div class="tpl-inspector">
+                  <span class="tpl-inspector__tag">&lt;template</span>
+                  <span class="tpl-inspector__attr"> id</span>="card-plantilla"
+                  <span class="tpl-inspector__tag">&gt;</span><br />
+                  &nbsp;&nbsp;
+                  <span class="tpl-inspector__frag">#document-fragment</span
+                  ><br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;div.clone-card<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;span.clone-card__num<br />
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;div &gt; p &gt;
+                  span.clone-ts-value<br />
+                  <span class="tpl-inspector__tag">&lt;/template&gt;</span
+                  ><br />
+                  <span class="tpl-inspector__note">
+                    ↳ no hay nada visible en pantalla
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="comp-col">
+              <div class="comp-col__header comp-col__header--ok">
+                🖥️ Clones insertados en el DOM
+              </div>
+              <div class="comp-col__body">
+                <div id="clones-area">
+                  <p
+                    id="clones-placeholder"
+                    style="
+                      color: var(--clr-text-disabled);
+                      font-size: 0.8125rem;
+                      text-align: center;
+                      padding: 1.5rem 0;
+                      margin: 0;
+                      font-family: var(--font-mono);
+                    "
+                  >
+                    Ningún clon todavía — pulsa "Clonar"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="demo-btn" onclick="clonarTemplate()">
+              🧩 Clonar e insertar
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="inspectarTemplate()"
+            >
+              🔍 Inspeccionar template
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="limpiarClones()"
+            >
+              ↺ Limpiar clones
+            </button>
+          </div>
+          <div class="output-console" id="out-s1">
+            Pulsa un botón para ver el resultado…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: slot ────────────────────────── -->
+        <section class="demo-section">
+          <h2>
+            2 · <code>&lt;slot&gt;</code>: el hueco que el componente reserva
+          </h2>
+          <p>
+            Un <code>&lt;slot&gt;</code> dentro del Shadow DOM actúa como punto
+            de inserción para el HTML que el consumidor del componente
+            proporciona. El contenido asignado al slot vive en el
+            <strong>Light DOM</strong> (accesible con
+            <code>querySelector</code> normal), no en el Shadow DOM. Si no se
+            proporciona contenido, el slot muestra su
+            <strong>fallback</strong> por defecto.
+          </p>
+
+          <div class="cards-grid">
+            <!-- Card 1: ambos slots definidos -->
+            <info-card id="card-1">
+              <span slot="title">JavaScript avanzado</span>
+              <span slot="body"
+                >Closures, prototipos y async/await. La base del lenguaje bajo
+                el capó.</span
+              >
+              <span slot="footer">ex-01 / ex-02</span>
+            </info-card>
+
+            <!-- Card 2: title definido, body y footer usan fallback -->
+            <info-card id="card-2">
+              <span slot="title">Shadow DOM</span>
+              <!-- slot="body" y slot="footer" no definidos → fallback -->
+            </info-card>
+
+            <!-- Card 3: ningún slot definido → todos muestran fallback -->
+            <info-card id="card-3">
+              <!-- sin ningún slot — la card muestra el contenido por defecto -->
+            </info-card>
+          </div>
+
+          <div class="btn-row">
+            <button class="demo-btn" onclick="inspeccionarSlots()">
+              🔍 Inspeccionar slots y Light DOM
+            </button>
+          </div>
+          <div class="output-console" id="out-s2">
+            Pulsa para ver qué devuelve assignedNodes() en cada slot…
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

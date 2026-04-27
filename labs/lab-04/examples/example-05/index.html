@@ -1,0 +1,440 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 05 · Componente completo · Lab 04</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      /* ── Página ──────────────────────────────────────── */
+      product-card {
+        display: block;
+      }
+
+      #cards-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+        margin-top: 1rem;
+      }
+
+      /* ── Controles por card ──────────────────────────── */
+      .controls-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .control-group {
+        padding: 0.875rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-2);
+      }
+      .control-group__label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--clr-text-muted);
+        margin-bottom: 0.625rem;
+        font-family: var(--font-mono);
+      }
+      .btn-row {
+        display: flex;
+        gap: 0.375rem;
+        flex-wrap: wrap;
+      }
+
+      /* ── Log de ciclo de vida ────────────────────────── */
+      .log-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 1rem 0 0.5rem;
+      }
+      .log-header p {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--clr-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: 0;
+      }
+      #lifecycle-log {
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-2);
+        max-height: 220px;
+        overflow-y: auto;
+        padding: 0.625rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+      }
+      .log-entry {
+        display: flex;
+        gap: 0.75rem;
+        align-items: baseline;
+        padding: 0.25rem 0.375rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        flex-shrink: 0;
+      }
+      .log-entry--connected {
+        background: rgba(16, 185, 129, 0.07);
+      }
+      .log-entry--disconnected {
+        background: rgba(239, 68, 68, 0.07);
+      }
+      .log-entry--attr {
+        background: rgba(245, 158, 11, 0.07);
+      }
+      .log-entry--cart {
+        background: rgba(99, 102, 241, 0.07);
+      }
+      .log-entry__ts {
+        color: var(--clr-text-disabled);
+        font-size: 0.6875rem;
+        flex-shrink: 0;
+      }
+      .log-entry__msg {
+        color: var(--clr-text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Template del componente ────────────────────── -->
+    <template id="product-card-tpl">
+      <style>
+        :host {
+          display: block;
+        }
+
+        .card {
+          border-radius: 8px;
+          border: 1px solid var(--clr-border, #334155);
+          background: var(--clr-bg-2, #1e293b);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          transition: opacity 0.3s;
+        }
+        :host([data-stock="0"]) .card {
+          opacity: 0.65;
+        }
+
+        /* ── Imagen + badge ── */
+        .card__img-wrapper {
+          position: relative;
+        }
+
+        .badge {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          padding: 0.125rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.6875rem;
+          font-weight: 700;
+          font-family: sans-serif;
+        }
+        .badge--ok {
+          background: #10b981;
+          color: white;
+        }
+        .badge--warn {
+          background: #f59e0b;
+          color: black;
+        }
+        .badge--sold-out {
+          background: #ef4444;
+          color: white;
+        }
+
+        /* ── Cuerpo ── */
+        .card__body {
+          padding: 0.875rem 1rem;
+          flex: 1;
+        }
+
+        .card__title {
+          font-size: 0.9375rem;
+          font-weight: 700;
+          color: var(--clr-text, #f1f5f9);
+          margin: 0 0 0.375rem;
+        }
+        .card__price {
+          font-size: 1.125rem;
+          font-weight: 700;
+          color: var(--clr-primary-light, #a5b4fc);
+          margin: 0 0 0.5rem;
+        }
+        .card__desc {
+          font-size: 0.8125rem;
+          color: var(--clr-text-muted, #94a3b8);
+          margin: 0;
+          line-height: 1.5;
+        }
+
+        /* ── Footer ── */
+        .card__footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.75rem 1rem;
+          border-top: 1px solid var(--clr-border, #334155);
+          background: var(--clr-bg-3, #0f172a);
+        }
+        .btn-add {
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          background: #6366f1;
+          color: white;
+          border: none;
+          cursor: pointer;
+          font-size: 0.8125rem;
+          font-family: var(--font-sans, sans-serif);
+          transition: background 0.15s;
+        }
+        .btn-add:hover {
+          background: #4f46e5;
+        }
+        :host([data-stock="0"]) .btn-add {
+          background: #475569;
+          cursor: not-allowed;
+        }
+        .card__timer {
+          font-size: 0.6875rem;
+          color: var(--clr-text-disabled, #475569);
+          font-family: monospace;
+        }
+      </style>
+
+      <article class="card">
+        <div class="card__img-wrapper">
+          <slot name="image"></slot>
+          <span class="badge" id="stock-badge"></span>
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">
+            <slot name="title">Producto sin título</slot>
+          </h3>
+          <p class="card__price">
+            <slot name="price">—</slot>
+          </p>
+          <p class="card__desc">
+            <slot name="description">Sin descripción</slot>
+          </p>
+        </div>
+        <footer class="card__footer">
+          <button class="btn-add" id="btn-add">Añadir al carrito</button>
+          <span class="card__timer"> ⏱ <span id="timer">0</span>s en DOM </span>
+        </footer>
+      </article>
+    </template>
+    <!-- ── Fin template ───────────────────────────────── -->
+
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-04"
+            class="back-link"
+            target="_parent"
+            >← Lab 04</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 04 · Example 05</span>
+        <h1>El web component completo</h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: el componente en uso ───────── -->
+        <section class="demo-section">
+          <h2>1 · Tres instancias del mismo componente</h2>
+          <p>
+            El mismo <code>&lt;product-card&gt;</code> se usa tres veces con
+            contenido diferente vía <code>slot</code>. El atributo
+            <code>data-stock</code> está observado: cuando cambia,
+            <code>attributeChangedCallback()</code> actualiza el badge y el
+            aspecto visual. Cada card tiene su propio timer interno iniciado en
+            <code>connectedCallback()</code> y parado en
+            <code>disconnectedCallback()</code>.
+          </p>
+
+          <div id="cards-container">
+            <!-- Card 1: en stock -->
+            <product-card id="card-1" data-stock="99">
+              <div
+                slot="image"
+                style="
+                  height: 130px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 3rem;
+                  background: #312e81;
+                "
+              >
+                🎧
+              </div>
+              <span slot="title">Auriculares Pro X</span>
+              <span slot="price">€129</span>
+              <span slot="description"
+                >Cancelación activa de ruido. 30 h de batería.</span
+              >
+            </product-card>
+
+            <!-- Card 2: últimas unidades -->
+            <product-card id="card-2" data-stock="3">
+              <div
+                slot="image"
+                style="
+                  height: 130px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 3rem;
+                  background: #134e4a;
+                "
+              >
+                ⌨️
+              </div>
+              <span slot="title">Teclado Mecánico TKL</span>
+              <span slot="price">€89</span>
+              <span slot="description"
+                >Switches Cherry MX Blue. Layout 80%.</span
+              >
+            </product-card>
+
+            <!-- Card 3: agotado -->
+            <product-card id="card-3" data-stock="0">
+              <div
+                slot="image"
+                style="
+                  height: 130px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 3rem;
+                  background: #451a03;
+                "
+              >
+                📷
+              </div>
+              <span slot="title">Webcam 4K Ultra</span>
+              <span slot="price">€199</span>
+              <span slot="description"
+                >Enfoque automático. Gran angular 90°.</span
+              >
+            </product-card>
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: ciclo de vida en acción ────── -->
+        <section class="demo-section">
+          <h2>2 · El ciclo de vida completo en acción</h2>
+          <p>
+            Cambia el stock de cada card y observa
+            <code>attributeChangedCallback()</code>. Añade o quita cards para
+            ver <code>connectedCallback()</code> y
+            <code>disconnectedCallback()</code>. Fíjate en cómo el timer de cada
+            card se detiene cuando se elimina del DOM y se reinicia si se vuelve
+            a añadir.
+          </p>
+
+          <div class="controls-grid">
+            <div class="control-group">
+              <p class="control-group__label">🎧 Auriculares</p>
+              <div class="btn-row">
+                <button
+                  class="demo-btn demo-btn--danger"
+                  onclick="setStock('card-1', 0)"
+                >
+                  Agotado
+                </button>
+                <button class="demo-btn" onclick="setStock('card-1', 3)">
+                  Últimas 3
+                </button>
+                <button class="demo-btn" onclick="setStock('card-1', 99)">
+                  En stock
+                </button>
+              </div>
+            </div>
+            <div class="control-group">
+              <p class="control-group__label">⌨️ Teclado</p>
+              <div class="btn-row">
+                <button
+                  class="demo-btn demo-btn--danger"
+                  onclick="setStock('card-2', 0)"
+                >
+                  Agotado
+                </button>
+                <button class="demo-btn" onclick="setStock('card-2', 2)">
+                  Últimas 2
+                </button>
+                <button class="demo-btn" onclick="setStock('card-2', 99)">
+                  En stock
+                </button>
+              </div>
+            </div>
+            <div class="control-group">
+              <p class="control-group__label">📷 Webcam</p>
+              <div class="btn-row">
+                <button
+                  class="demo-btn demo-btn--danger"
+                  onclick="setStock('card-3', 0)"
+                >
+                  Agotado
+                </button>
+                <button class="demo-btn" onclick="setStock('card-3', 1)">
+                  Última 1
+                </button>
+                <button class="demo-btn" onclick="setStock('card-3', 99)">
+                  En stock
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="demo-btn" onclick="addCard()">
+              + Añadir card dinámica
+            </button>
+            <button
+              class="demo-btn demo-btn--danger"
+              onclick="removeLastCard()"
+            >
+              − Quitar última card
+            </button>
+            <button class="demo-btn demo-btn--secondary" onclick="clearLog()">
+              ↺ Limpiar log
+            </button>
+          </div>
+
+          <div class="log-header">
+            <p>Log de ciclo de vida</p>
+          </div>
+          <div id="lifecycle-log">
+            <p
+              id="log-empty"
+              style="
+                color: var(--clr-text-disabled);
+                font-size: 0.8125rem;
+                text-align: center;
+                padding: 1rem;
+                margin: 0;
+                font-family: var(--font-mono);
+              "
+            >
+              Los eventos aparecerán aquí…
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
