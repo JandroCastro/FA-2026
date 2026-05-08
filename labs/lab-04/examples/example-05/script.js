@@ -1,6 +1,18 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// LOG DE CICLO DE VIDA — debe definirse antes de customElements.define
-// porque connectedCallback se dispara durante el upgrade (al hacer define)
+// CONTADOR DE CARDS ACTIVAS
+// Definido antes de customElements.define porque connectedCallback se dispara
+// durante el upgrade y necesita que estas funciones ya existan.
+// ─────────────────────────────────────────────────────────────────────────────
+
+var activeCards = 0;
+
+function updateActiveCount() {
+  var el = document.getElementById("active-count");
+  if (el) el.textContent = activeCards;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOG DE CICLO DE VIDA
 // ─────────────────────────────────────────────────────────────────────────────
 
 var LOG_TYPE = {
@@ -32,7 +44,6 @@ function addToLog(msg, type) {
   entry.appendChild(tsEl);
   entry.appendChild(msgEl);
 
-  // Más reciente arriba
   logEl.insertBefore(entry, logEl.firstChild);
 }
 
@@ -48,9 +59,7 @@ class ProductCard extends HTMLElement {
 
   constructor() {
     super();
-    this._shadow = null; // se crea en connectedCallback
-    this._intervalId = null;
-    this._secondsConnected = 0;
+    this._shadow = null; // se crea en connectedCallback, no aquí
   }
 
   connectedCallback() {
@@ -69,27 +78,31 @@ class ProductCard extends HTMLElement {
         });
     }
 
-    // Siempre al conectar: actualizar badge y arrancar timer
+    // Siempre al conectar: actualizar badge y sumar al contador
     this._updateBadge();
-    this._startTimer();
+    activeCards++;
+    updateActiveCount();
 
     addToLog(
       "✅ connectedCallback → " +
         (this.id || "product-card") +
-        " | isConnected: " +
-        this.isConnected,
+        " | cards en DOM: " +
+        activeCards,
       LOG_TYPE.connected,
     );
   }
 
   disconnectedCallback() {
-    // ⚠️  Limpiar el intervalo para evitar memory leak
-    this._stopTimer();
+    // Restar del contador: si este callback no existiera,
+    // activeCards nunca bajaría aunque la card desaparezca de la pantalla
+    activeCards--;
+    updateActiveCount();
 
     addToLog(
       "🔴 disconnectedCallback → " +
         (this.id || "product-card") +
-        " | intervalo limpiado",
+        " | cards en DOM: " +
+        activeCards,
       LOG_TYPE.disconnected,
     );
   }
@@ -129,24 +142,6 @@ class ProductCard extends HTMLElement {
     }
   }
 
-  _startTimer() {
-    this._stopTimer(); // limpiar cualquier intervalo previo
-    this._secondsConnected = 0;
-    var self = this;
-    this._intervalId = setInterval(function () {
-      self._secondsConnected++;
-      var timerEl = self._shadow && self._shadow.getElementById("timer");
-      if (timerEl) timerEl.textContent = self._secondsConnected;
-    }, 1000);
-  }
-
-  _stopTimer() {
-    if (this._intervalId !== null) {
-      clearInterval(this._intervalId);
-      this._intervalId = null;
-    }
-  }
-
   _onAddToCart() {
     var btn = this._shadow.getElementById("btn-add");
     var stock = parseInt(this.getAttribute("data-stock"), 10);
@@ -159,6 +154,7 @@ class ProductCard extends HTMLElement {
       return;
     }
 
+    // El título viene del Light DOM (slot), no del Shadow DOM
     var titleEl = this.querySelector('[slot="title"]');
     var title = titleEl ? titleEl.textContent.trim() : "Producto";
 
@@ -183,7 +179,6 @@ function setStock(cardId, stock) {
 }
 
 var dynamicCount = 0;
-
 var DYNAMIC_EMOJIS = ["📦", "🖥️", "🖱️", "💾", "🔋", "🎮"];
 var DYNAMIC_COLORS = [
   "#1e3a5f",
@@ -243,8 +238,7 @@ function removeLastCard() {
     addToLog("⚠️  No hay cards que eliminar", LOG_TYPE.cart);
     return;
   }
-  var last = cards[cards.length - 1];
-  container.removeChild(last);
+  container.removeChild(cards[cards.length - 1]);
   window.cards = Array.prototype.slice.call(
     document.querySelectorAll("product-card"),
   );
@@ -253,7 +247,6 @@ function removeLastCard() {
 function clearLog() {
   var logEl = document.getElementById("lifecycle-log");
   logEl.innerHTML = "";
-
   var empty = document.createElement("p");
   empty.id = "log-empty";
   empty.style.cssText =
@@ -268,6 +261,7 @@ function clearLog() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 window.ProductCard = ProductCard;
+window.activeCards = activeCards;
 window.cards = Array.prototype.slice.call(
   document.querySelectorAll("product-card"),
 );
@@ -275,6 +269,5 @@ window.cards = Array.prototype.slice.call(
 //   window.cards[0].getAttribute('data-stock')
 //   window.cards[0].setAttribute('data-stock', '0')
 //   window.cards[0].shadowRoot.querySelector('.card')
-//   window.cards[0]._intervalId        // el ID del setInterval activo
-//   window.cards[0]._secondsConnected  // segundos desde el último connect
-//   window.cards[2].shadowRoot.getElementById('stock-badge').textContent
+//   window.cards[0].shadowRoot.getElementById('stock-badge').textContent
+//   window.cards[0].querySelector('[slot="title"]').textContent

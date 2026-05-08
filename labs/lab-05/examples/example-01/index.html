@@ -1,0 +1,310 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 01 · Bubbling y delegación · Lab 05</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-console {
+        white-space: pre-wrap;
+      }
+
+      /* ── Árbol de bubbling ───────────────────────────── */
+      .bubble-box {
+        padding: 0.875rem 1.25rem;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        font-weight: 600;
+        user-select: none;
+      }
+
+      .bubble-box .bubble-box {
+        margin-top: 0.75rem;
+      }
+
+      .bubble-box--outer {
+        background: rgba(99, 102, 241, 0.12);
+        border: 2px solid rgba(99, 102, 241, 0.4);
+        color: var(--clr-primary-light);
+      }
+
+      .bubble-box--middle {
+        background: rgba(16, 185, 129, 0.12);
+        border: 2px solid rgba(16, 185, 129, 0.35);
+        color: #6ee7b7;
+      }
+
+      .bubble-box--inner {
+        background: rgba(245, 158, 11, 0.12);
+        border: 2px solid rgba(245, 158, 11, 0.35);
+        color: #fcd34d;
+        text-align: center;
+      }
+
+      .bubble-box.flash-box {
+        outline: 3px solid currentColor;
+        outline-offset: 3px;
+      }
+
+      /* ── Badge de stopPropagation ────────────────────── */
+      .stop-badge {
+        pointer-events: none;
+        display: inline-block;
+        margin-left: 0.5rem;
+        padding: 0.125rem 0.5rem;
+        border-radius: var(--radius-sm);
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #fca5a5;
+        font-size: 0.6875rem;
+        vertical-align: middle;
+      }
+
+      /* ── Toggle ──────────────────────────────────────── */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        background: var(--clr-bg-2);
+        border: 1px solid var(--clr-border);
+        font-size: 0.875rem;
+        cursor: pointer;
+        color: var(--clr-text);
+      }
+
+      .toggle {
+        position: relative;
+        width: 40px;
+        height: 22px;
+        flex-shrink: 0;
+      }
+
+      .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-track {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: var(--clr-bg-3);
+        border: 1px solid var(--clr-border);
+        transition:
+          background 0.2s,
+          border-color 0.2s;
+      }
+
+      .toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--clr-text-muted);
+        transition:
+          transform 0.2s,
+          background 0.2s;
+      }
+
+      .toggle input:checked + .toggle-track {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.45);
+      }
+
+      .toggle input:checked + .toggle-track + .toggle-thumb {
+        transform: translateX(18px);
+        background: #ef4444;
+      }
+
+      /* ── Lista de delegación ─────────────────────────── */
+      .task-list {
+        list-style: none;
+        margin: 1rem 0 0;
+        padding: 0;
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .task-item {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--clr-border);
+        cursor: pointer;
+        font-size: 0.875rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--clr-text);
+        transition: background 0.12s;
+      }
+
+      .task-item:last-child {
+        border-bottom: none;
+      }
+
+      .task-item:hover {
+        background: var(--clr-bg-2);
+      }
+
+      .task-item.flash-item {
+        background: var(--clr-primary-bg);
+      }
+
+      .task-badge-item {
+        pointer-events: none;
+        font-size: 0.6875rem;
+        font-family: var(--font-mono);
+        color: var(--clr-text-muted);
+        padding: 0.125rem 0.375rem;
+        border-radius: var(--radius-sm);
+        background: var(--clr-bg-3);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-05"
+            class="back-link"
+            target="_parent"
+            >← Lab 05</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 05 · Example 01</span>
+        <h1>Bubbling y delegación en el Light DOM</h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: target vs currentTarget ─────────── -->
+        <section class="demo-section">
+          <h2>
+            1 · El recorrido del evento: <code>target</code> vs
+            <code>currentTarget</code>
+          </h2>
+          <p>
+            Hay un listener en cada nivel. Haz click en el recuadro más profundo
+            y observa cómo el evento sube de dentro hacia fuera disparando los
+            tres listeners en orden.
+            <code>target</code> siempre apunta al origen del click.
+            <code>currentTarget</code> apunta al elemento que está procesando el
+            evento en ese instante.
+          </p>
+
+          <div id="outer" class="bubble-box bubble-box--outer">
+            #outer · listener ① (el más externo)
+            <div id="middle" class="bubble-box bubble-box--middle">
+              #middle · listener ②
+              <div id="inner" class="bubble-box bubble-box--inner">
+                #inner · listener ③ · haz click aquí
+              </div>
+            </div>
+          </div>
+
+          <div class="output-console" id="out-s1">
+            Haz click en cualquier recuadro…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: stopPropagation ─────────────────── -->
+        <section class="demo-section">
+          <h2>2 · <code>stopPropagation()</code></h2>
+          <p>
+            Activa el interruptor para que el listener de
+            <code>#middle</code> llame a <code>event.stopPropagation()</code>.
+            El evento llegará a <code>#inner</code> y a <code>#middle</code>,
+            pero <strong>nunca alcanzará a <code>#outer</code></strong
+            >.
+          </p>
+
+          <label class="toggle-row">
+            <span class="toggle">
+              <input type="checkbox" id="stop-toggle" />
+              <span class="toggle-track"></span>
+              <span class="toggle-thumb"></span>
+            </span>
+            <span>
+              <code>stopPropagation</code> en <code>#middle</code>:
+              <strong id="stop-status">desactivado</strong>
+            </span>
+          </label>
+
+          <div
+            id="outer2"
+            class="bubble-box bubble-box--outer"
+            style="margin-top: 1rem"
+          >
+            #outer · listener
+            <div id="middle2" class="bubble-box bubble-box--middle">
+              #middle · listener
+              <span id="stop-badge" class="stop-badge" style="display: none"
+                >🛑 stopPropagation()</span
+              >
+              <div id="inner2" class="bubble-box bubble-box--inner">
+                #inner · haz click aquí
+              </div>
+            </div>
+          </div>
+
+          <div class="output-console" id="out-s2">
+            Activa el toggle y haz click en el recuadro interior…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 3: delegación de eventos ───────────── -->
+        <section class="demo-section">
+          <h2>3 · Delegación de eventos</h2>
+          <p>
+            La lista entera tiene <strong>un solo listener</strong> en el
+            <code>&lt;ul&gt;</code>. Ningún <code>&lt;li&gt;</code> tiene su
+            propio listener. Añade ítems dinámicamente y comprueba que el click
+            también funciona en los nuevos: el listener ya existía cuando se
+            crearon.
+          </p>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+            <button class="demo-btn" onclick="addTask()">+ Añadir ítem</button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="clearDelegationLog()"
+            >
+              Limpiar log
+            </button>
+          </div>
+
+          <ul id="task-list" class="task-list">
+            <li class="task-item" data-task-id="1">
+              Tarea inicial 1
+              <span class="task-badge-item">#1</span>
+            </li>
+            <li class="task-item" data-task-id="2">
+              Tarea inicial 2
+              <span class="task-badge-item">#2</span>
+            </li>
+            <li class="task-item" data-task-id="3">
+              Tarea inicial 3
+              <span class="task-badge-item">#3</span>
+            </li>
+          </ul>
+
+          <div class="output-console" id="out-s3">
+            Haz click en cualquier ítem de la lista…
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,156 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 05 · Lit: reflect y ciclo de vida · Lab 05</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-console {
+        white-space: pre-wrap;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-05"
+            class="back-link"
+            target="_parent"
+            >← Lab 05</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 05 · Example 05</span>
+        <h1>Lit: reflect, tipos y ciclo de vida</h1>
+      </header>
+
+      <main>
+        <!-- SECCIÓN 1: reflect -->
+        <section class="demo-section">
+          <h2>
+            1 · <code>reflect: true</code> — sincronía propiedad → atributo
+          </h2>
+          <p>
+            Sin <code>reflect</code>, cambiar una propiedad desde JS no
+            actualiza el atributo HTML. Con <code>reflect: true</code>, el
+            atributo se sincroniza automáticamente, lo que permite usar
+            selectores CSS como <code>:host([active])</code> o
+            <code>:host([variant="danger"])</code>.
+          </p>
+          <reflect-card id="reflect-card"></reflect-card>
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              margin-top: 1rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="toggleActive()">
+              Toggle active
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="cycleVariant()"
+            >
+              Cambiar variant
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="changeTitle()"
+            >
+              Cambiar title (sin reflect)
+            </button>
+          </div>
+          <div class="output-console" id="out-s1">Pulsa un botón…</div>
+        </section>
+
+        <!-- SECCIÓN 2: tipos -->
+        <section class="demo-section">
+          <h2>2 · Tipos de propiedades: conversión automática de atributos</h2>
+          <p>
+            Lit convierte los atributos HTML (siempre strings) al tipo declarado
+            en <code>static properties</code>. El tipo
+            <code>Boolean</code> tiene un comportamiento especial: la
+            <strong>presencia</strong> del atributo vale <code>true</code>,
+            independientemente de su valor.
+          </p>
+          <type-demo
+            id="type-demo"
+            amount="10"
+            label="Texto inicial"
+          ></type-demo>
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              margin-top: 1rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="setAmountAttr()">
+              setAttribute amount
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="toggleEnabledAttr()"
+            >
+              Toggle enabled
+            </button>
+            <button
+              class="demo-btn demo-btn--danger"
+              onclick="setBooleanGotcha()"
+            >
+              enabled="false" (trampa)
+            </button>
+          </div>
+          <div class="output-console" id="out-s2">Pulsa un botón…</div>
+        </section>
+
+        <!-- SECCIÓN 3: ciclo de vida -->
+        <section class="demo-section">
+          <h2>
+            3 · Ciclo de vida: <code>firstUpdated()</code> y
+            <code>updated()</code>
+          </h2>
+          <p>
+            <code>firstUpdated()</code> dispara una sola vez tras el primer
+            render: es el momento correcto para obtener referencias al DOM
+            renderizado. <code>updated(changedProperties)</code> dispara tras
+            cada re-render y recibe un <code>Map</code> con los valores
+            anteriores de las propiedades que cambiaron.
+          </p>
+          <lifecycle-demo id="lifecycle-demo"></lifecycle-demo>
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              margin-top: 1rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="changeLifecycleValue()">
+              Cambiar valor
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="clearLifecycleLog()"
+            >
+              Limpiar log
+            </button>
+          </div>
+          <div class="output-console" id="out-s3">
+            Esperando eventos del ciclo de vida…
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

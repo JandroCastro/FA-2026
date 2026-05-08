@@ -1,0 +1,187 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 03 · Patrones de comunicación · Lab 05</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-console {
+        white-space: pre-wrap;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+
+      /* ── Grid sender / bus / receiver ───────────────── */
+      .bus-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1rem;
+        align-items: start;
+        margin-top: 1rem;
+      }
+
+      /* ── Nodo central del bus ────────────────────────── */
+      .bus-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 1rem;
+        border-radius: var(--radius);
+        background: var(--clr-bg-2);
+        border: 1px solid var(--clr-border);
+        font-size: 0.75rem;
+        font-family: var(--font-mono);
+        color: var(--clr-text-muted);
+        text-align: center;
+        transition:
+          border-color 0.15s,
+          background 0.15s,
+          color 0.15s;
+      }
+
+      .bus-node.flash-bus {
+        border-color: var(--clr-primary-border);
+        background: var(--clr-primary-bg);
+        color: var(--clr-primary-light);
+      }
+
+      .bus-node__icon {
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+      /* ── Bloque de código en sección 1 ──────────────── */
+      .code-display {
+        background: var(--clr-bg-code, #0d1117);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--radius);
+        padding: 1rem 1.25rem;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        line-height: 1.7;
+        color: #94a3b8;
+        white-space: pre;
+        overflow-x: auto;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-05"
+            class="back-link"
+            target="_parent"
+            >← Lab 05</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 05 · Example 03</span>
+        <h1>Patrones de comunicación entre componentes</h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: EventBus ──────────────────────── -->
+        <section class="demo-section">
+          <h2>
+            1 · El EventBus: <code>EventTarget</code> como canal compartido
+          </h2>
+          <p>
+            El patrón EventBus resuelve la comunicación entre componentes sin
+            relación padre-hijo. Cualquiera puede emitir; cualquiera puede
+            escuchar. La implementación mínima son ocho líneas sobre
+            <code>EventTarget</code>, la misma clase base de <code>window</code>
+            y del DOM.
+          </p>
+          <div class="code-display" id="bus-code-display"></div>
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              margin-top: 1rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="testBusOn()">
+              👂 Suscribirse al bus
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="testBusEmit()"
+            >
+              ⚡ Emitir al bus
+            </button>
+          </div>
+          <div class="output-console" id="out-s1">
+            Primero suscríbete, luego emite…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: dos componentes sin relación ─── -->
+        <section class="demo-section">
+          <h2>2 · Dos componentes sin relación en el árbol</h2>
+          <p>
+            <code>bus-sender</code> y <code>bus-receiver</code> no tienen
+            relación padre-hijo ni se conocen entre sí. Se comunican
+            exclusivamente a través del bus. El log inferior muestra todo el
+            tráfico que pasa por él, incluyendo el que envíes desde consola.
+          </p>
+          <div class="bus-grid">
+            <bus-sender id="sender"></bus-sender>
+            <div id="bus-node" class="bus-node">
+              <span class="bus-node__icon">📡</span>
+              <span>EventBus</span>
+            </div>
+            <bus-receiver id="receiver"></bus-receiver>
+          </div>
+          <div class="output-console" id="out-s2">
+            Escribe un mensaje y pulsa Enviar…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 3: cleanup ────────────────────────── -->
+        <section class="demo-section">
+          <h2>
+            3 · Cleanup: <code>disconnectedCallback</code> desuscribe del bus
+          </h2>
+          <p>
+            Sin cleanup, el bus seguirá llamando al handler aunque el componente
+            no esté en el DOM. Cada reconexión añadiría un listener nuevo
+            acumulando memoria. El <code>disconnectedCallback</code> es el
+            momento de limpiar.
+          </p>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+            <button
+              class="demo-btn demo-btn--danger"
+              onclick="removeReceiver()"
+            >
+              − Desconectar receiver
+            </button>
+            <button class="demo-btn" onclick="restoreReceiver()">
+              + Reconectar receiver
+            </button>
+          </div>
+          <p
+            style="
+              margin-top: 0.75rem;
+              font-size: 0.875rem;
+              color: var(--clr-text-muted);
+            "
+          >
+            Desconecta el receiver y envía mensajes desde la sección 2. El bus
+            sigue activo, pero el receiver no recibe nada.
+          </p>
+          <div class="output-console" id="out-s3">
+            Estado: receiver conectado ✅
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

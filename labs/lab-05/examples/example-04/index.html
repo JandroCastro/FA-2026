@@ -1,0 +1,167 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 04 · Introducción a Lit · Lab 05</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-console {
+        white-space: pre-wrap;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+
+      /* ── Comparación vanilla vs Lit ─────────────────── */
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .compare-col {
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        overflow: hidden;
+      }
+
+      .compare-header {
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        font-family: var(--font-mono);
+        background: var(--clr-bg-3);
+        border-bottom: 1px solid var(--clr-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .compare-header--vanilla {
+        color: var(--clr-text-muted);
+      }
+      .compare-header--lit {
+        color: var(--clr-primary-light);
+      }
+
+      .compare-body {
+        padding: 1.25rem;
+        background: var(--clr-bg-2);
+      }
+
+      .line-count {
+        font-size: 0.6875rem;
+        color: var(--clr-text-disabled);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-05"
+            class="back-link"
+            target="_parent"
+            >← Lab 05</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 05 · Example 04</span>
+        <h1>Introducción a Lit</h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: Vanilla vs Lit ────────────────── -->
+        <section class="demo-section">
+          <h2>1 · El mismo componente: Vanilla vs Lit</h2>
+          <p>
+            Ambos contadores tienen el mismo comportamiento. Lit no cambia lo
+            que hace el navegador: reduce el código necesario para decírselo. El
+            diferencial clave: con Lit, <code>this.count++</code>
+            re-renderiza el componente automáticamente. Con vanilla, hay que
+            actualizar el DOM a mano.
+          </p>
+          <div class="compare-grid">
+            <div class="compare-col">
+              <div class="compare-header compare-header--vanilla">
+                <span>⚙️ Vanilla Web Component</span>
+                <span id="vanilla-lines" class="line-count"></span>
+              </div>
+              <div class="compare-body">
+                <vanilla-counter id="vanilla-counter"></vanilla-counter>
+              </div>
+            </div>
+            <div class="compare-col">
+              <div class="compare-header compare-header--lit">
+                <span>⚡ LitElement</span>
+                <span id="lit-lines" class="line-count"></span>
+              </div>
+              <div class="compare-body">
+                <lit-counter id="lit-counter"></lit-counter>
+              </div>
+            </div>
+          </div>
+          <div class="output-console" id="out-s1">
+            Haz click en cualquiera de los dos contadores…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: static properties ─────────────── -->
+        <section class="demo-section">
+          <h2>2 · Propiedades reactivas: <code>static properties</code></h2>
+          <p>
+            Declarar una propiedad en <code>static properties</code> la
+            convierte en reactiva: cuando su valor cambia, Lit re-renderiza solo
+            las partes del template que la usan. No hace falta tocar el DOM.
+          </p>
+          <lit-profile id="lit-profile"></lit-profile>
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              margin-top: 1rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button class="demo-btn" onclick="changeName()">
+              Cambiar nombre
+            </button>
+            <button class="demo-btn demo-btn--secondary" onclick="addScore()">
+              +10 puntos
+            </button>
+            <button
+              class="demo-btn demo-btn--secondary"
+              onclick="toggleStatus()"
+            >
+              Toggle status
+            </button>
+          </div>
+          <div class="output-console" id="out-s2">
+            Pulsa un botón para cambiar propiedades…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 3: template html`` ───────────────── -->
+        <section class="demo-section">
+          <h2>
+            3 · El template <code>html``</code>: los cuatro tipos de binding
+          </h2>
+          <p>
+            <code>html``</code> acepta cuatro sintaxis de binding:
+            <code>${expresión}</code> para valores, <code>@evento</code> para
+            listeners, <code>.propiedad</code> para propiedades DOM y
+            <code>?atributo</code> para booleanos.
+          </p>
+          <lit-template-demo id="template-demo"></lit-template-demo>
+          <div class="output-console" id="out-s3">
+            Interactúa con el componente de arriba…
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

@@ -43,6 +43,36 @@
         flex-wrap: wrap;
       }
 
+      /* ── Contador de cards activas ───────────────────── */
+      .active-counter {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--clr-border);
+        background: var(--clr-bg-2);
+        margin: 1rem 0 0.5rem;
+      }
+      .active-counter__label {
+        font-size: 0.875rem;
+        color: var(--clr-text-muted);
+        margin: 0;
+      }
+      .active-counter__value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--clr-primary-light);
+        line-height: 1;
+      }
+      .active-counter__hint {
+        font-size: 0.75rem;
+        color: var(--clr-text-disabled);
+        font-family: var(--font-mono);
+        margin: 0;
+      }
+
       /* ── Log de ciclo de vida ────────────────────────── */
       .log-header {
         display: flex;
@@ -122,7 +152,6 @@
           opacity: 0.65;
         }
 
-        /* ── Imagen + badge ── */
         .card__img-wrapper {
           position: relative;
         }
@@ -150,7 +179,6 @@
           color: white;
         }
 
-        /* ── Cuerpo ── */
         .card__body {
           padding: 0.875rem 1rem;
           flex: 1;
@@ -175,11 +203,10 @@
           line-height: 1.5;
         }
 
-        /* ── Footer ── */
         .card__footer {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
           padding: 0.75rem 1rem;
           border-top: 1px solid var(--clr-border, #334155);
           background: var(--clr-bg-3, #0f172a);
@@ -202,11 +229,6 @@
           background: #475569;
           cursor: not-allowed;
         }
-        .card__timer {
-          font-size: 0.6875rem;
-          color: var(--clr-text-disabled, #475569);
-          font-family: monospace;
-        }
       </style>
 
       <article class="card">
@@ -227,7 +249,6 @@
         </div>
         <footer class="card__footer">
           <button class="btn-add" id="btn-add">Añadir al carrito</button>
-          <span class="card__timer"> ⏱ <span id="timer">0</span>s en DOM </span>
         </footer>
       </article>
     </template>
@@ -259,9 +280,7 @@
             contenido diferente vía <code>slot</code>. El atributo
             <code>data-stock</code> está observado: cuando cambia,
             <code>attributeChangedCallback()</code> actualiza el badge y el
-            aspecto visual. Cada card tiene su propio timer interno iniciado en
-            <code>connectedCallback()</code> y parado en
-            <code>disconnectedCallback()</code>.
+            aspecto visual de la card.
           </p>
 
           <div id="cards-container">
@@ -340,9 +359,10 @@
             Cambia el stock de cada card y observa
             <code>attributeChangedCallback()</code>. Añade o quita cards para
             ver <code>connectedCallback()</code> y
-            <code>disconnectedCallback()</code>. Fíjate en cómo el timer de cada
-            card se detiene cuando se elimina del DOM y se reinicia si se vuelve
-            a añadir.
+            <code>disconnectedCallback()</code>. El contador refleja en tiempo
+            real cuántas cards están en el DOM: sube al añadir, baja al quitar.
+            Si <code>disconnectedCallback()</code> no existiera, el contador
+            nunca bajaría aunque la card desaparezca visualmente.
           </p>
 
           <div class="controls-grid">
@@ -400,18 +420,27 @@
           </div>
 
           <div class="btn-row">
-            <button class="demo-btn" onclick="addCard()">
-              + Añadir card dinámica
-            </button>
+            <button class="demo-btn" onclick="addCard()">+ Añadir card</button>
             <button
               class="demo-btn demo-btn--danger"
               onclick="removeLastCard()"
             >
-              − Quitar última card
+              − Quitar última
             </button>
             <button class="demo-btn demo-btn--secondary" onclick="clearLog()">
               ↺ Limpiar log
             </button>
+          </div>
+
+          <!-- Contador visible: la prueba de que disconnectedCallback funciona -->
+          <div class="active-counter">
+            <div>
+              <p class="active-counter__label">Cards en el DOM</p>
+              <p class="active-counter__hint">
+                connectedCallback suma · disconnectedCallback resta
+              </p>
+            </div>
+            <span class="active-counter__value" id="active-count">0</span>
           </div>
 
           <div class="log-header">

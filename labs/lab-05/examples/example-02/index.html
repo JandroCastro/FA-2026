@@ -1,0 +1,119 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Example 02 · Eventos en el Shadow DOM · Lab 05</title>
+    <link rel="stylesheet" href="../../../shared/lab-base.css" />
+    <style>
+      .output-console {
+        white-space: pre-wrap;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+      }
+
+      /* ── Grid comparación sección 1 ──────────────────── */
+      .signal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      shadow-signal {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="lab-wrapper">
+      <header class="lab-header">
+        <nav class="lab-header__nav">
+          <a
+            href="../../../../index.html#/labs/lab-05"
+            class="back-link"
+            target="_parent"
+            >← Lab 05</a
+          >
+          <a href="../../../../index.html" class="back-link" target="_parent"
+            >🏠</a
+          >
+        </nav>
+        <span class="lab-tag">Lab 05 · Example 02</span>
+        <h1>Eventos en el Shadow DOM</h1>
+      </header>
+
+      <main>
+        <!-- ── SECCIÓN 1: composed false vs true ──────────── -->
+        <section class="demo-section">
+          <h2>
+            1 · La frontera: <code>composed: false</code> vs
+            <code>composed: true</code>
+          </h2>
+          <p>
+            Ambos botones viven dentro de un Shadow DOM. El listener está en
+            <code>document</code>, en el Light DOM. Haz click en cada uno y
+            observa cuál llega al listener externo y cuál queda atrapado dentro.
+          </p>
+          <div class="signal-grid">
+            <shadow-signal id="sig-1" label="sig-1" event-name="basic-event">
+            </shadow-signal>
+            <shadow-signal
+              id="sig-2"
+              composed=""
+              label="sig-2"
+              event-name="composed-event"
+            >
+            </shadow-signal>
+          </div>
+          <div class="output-console" id="out-s1">
+            Haz click en uno de los dos botones…
+          </div>
+        </section>
+
+        <!-- ── SECCIÓN 2: retargeting ──────────────────────── -->
+        <section class="demo-section">
+          <h2>
+            2 · Retargeting: <code>event.target</code> cambia al cruzar la
+            frontera
+          </h2>
+          <p>
+            Tres listeners observan el mismo evento: uno dentro del Shadow DOM
+            (en el shadow root), uno en el host element y uno en
+            <code>document</code>. Todos reciben el mismo evento, pero cada uno
+            ve un <code>target</code> distinto.
+          </p>
+          <shadow-signal
+            id="sig-3"
+            composed=""
+            label="sig-3 · composed: true"
+            event-name="retarget-event"
+          >
+          </shadow-signal>
+          <div class="output-console" id="out-s2">Haz click en el botón…</div>
+        </section>
+
+        <!-- ── SECCIÓN 3: composedPath() ──────────────────── -->
+        <section class="demo-section">
+          <h2>
+            3 · <code>composedPath()</code>: el mapa completo del recorrido
+          </h2>
+          <p>
+            <code>event.composedPath()</code> devuelve el array completo de
+            nodos que el evento atravesó, incluyendo los del Shadow DOM. Solo es
+            válido <strong>dentro del event handler</strong>: fuera devuelve
+            array vacío.
+          </p>
+          <shadow-signal
+            id="sig-4"
+            composed=""
+            label="sig-4 · composed: true"
+            event-name="path-event"
+          >
+          </shadow-signal>
+          <div class="output-console" id="out-s3">Haz click en el botón…</div>
+        </section>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

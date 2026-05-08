@@ -115,6 +115,41 @@ export const LABS = [
     ],
     exercises: [],
   },
+  {
+    id: "lab-05",
+    number: "05",
+    title: "Eventos y Lit",
+    description:
+      "Comunicación entre componentes: bubbling, Shadow DOM events y el patrón " +
+      "EventBus. Desarrollo con Lit: propiedades reactivas, templates declarativos " +
+      "y ciclo de vida sobre la API nativa de Web Components.",
+    icon: "⚡",
+    topics: [
+      "Event bubbling",
+      "Delegación de eventos",
+      "Shadow DOM events",
+      "composed: true",
+      "composedPath",
+      "Retargeting",
+      "EventBus",
+      "Lit",
+      "LitElement",
+      "Propiedades reactivas",
+      "html template tag",
+      "reflect",
+      "firstUpdated",
+      "updated",
+    ],
+    status: "available",
+    examples: [
+      { id: "example-01", title: "Bubbling y delegación en el Light DOM" },
+      { id: "example-02", title: "Eventos en el Shadow DOM" },
+      { id: "example-03", title: "Patrones de comunicación entre componentes" },
+      { id: "example-04", title: "Introducción a Lit" },
+      { id: "example-05", title: "Lit: reflect, tipos y ciclo de vida" },
+    ],
+    exercises: [],
+  },
 ];
 
 export function getLabById(id) {
